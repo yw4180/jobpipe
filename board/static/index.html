@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jobpipe board</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #fff; --ink: #1a2233; --muted: #6b7486;
+    --line: #e4e7ec; --accent: #2563eb; --good: #16803c; --warn: #b45309; --bad: #b91c1c;
+    --gold: #a16207; --gold-bg: #fefce8;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 14px/1.5 -apple-system, "Helvetica Neue", sans-serif; }
+  header { display: flex; align-items: baseline; gap: 16px; padding: 14px 22px;
+           background: var(--card); border-bottom: 1px solid var(--line);
+           position: sticky; top: 0; z-index: 5; flex-wrap: wrap; }
+  header h1 { font-size: 17px; margin: 0; }
+  #stats { display: flex; gap: 14px; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+  #stats b { color: var(--ink); }
+  nav { margin-left: auto; display: flex; gap: 6px; }
+  nav button { border: 1px solid var(--line); background: var(--card); padding: 5px 14px;
+               border-radius: 7px; cursor: pointer; font-size: 13px; color: var(--muted); }
+  nav button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  nav button#tab-golden.on { background: var(--gold); border-color: var(--gold); }
+  main { max-width: 1080px; margin: 0 auto; padding: 18px 22px 60px; }
+  .filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .filters input[type=text] { padding: 6px 10px; border: 1px solid var(--line); border-radius: 7px;
+                              width: 200px; font-size: 13px; }
+  .filters label { color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 4px; }
+  .filters select { padding: 5px 8px; border: 1px solid var(--line); border-radius: 7px; font-size: 13px; }
+  #count { color: var(--muted); font-size: 13px; margin-left: auto; }
+  .hint { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+  .legend { color: var(--muted); font-size: 11.5px; margin: -6px 0 14px; line-height: 1.7; }
+  .legend b { color: #4b5563; font-weight: 600; }
+  /* Overview page */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+           gap: 10px; margin-bottom: 18px; }
+  .tile { background: var(--card); border: 1px solid var(--line); border-radius: 9px;
+          padding: 12px 14px; }
+  .tile .tv { font-size: 26px; font-weight: 700; line-height: 1.2; }
+  .tile .tl { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .viz-card { background: var(--card); border: 1px solid var(--line); border-radius: 9px;
+              padding: 14px 16px; overflow-x: auto; }
+  .viz-legend { font-size: 11.5px; color: var(--muted); font-weight: 400; margin-left: 12px; }
+  .viz-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+                  vertical-align: -1px; margin-right: 4px; }
+  .heat-grid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 12px);
+               gap: 2px; width: max-content; }
+  .heat-cell { width: 12px; height: 12px; border-radius: 3px; }
+  .heat-months { display: flex; font-size: 10.5px; color: var(--muted); margin-bottom: 4px;
+                 width: max-content; }
+  .heat-scale { display: flex; gap: 3px; align-items: center; margin-top: 8px;
+                font-size: 11px; color: var(--muted); }
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: 140px;
+          border-bottom: 1px solid var(--line); padding-bottom: 0; width: 100%; }
+  .barcol { flex: 1; min-width: 14px; display: flex; flex-direction: column;
+            justify-content: flex-end; gap: 2px; height: 100%; }
+  .barseg { border-radius: 4px 4px 0 0; min-height: 0; }
+  .barcol .b-hi { background: #2a78d6; }
+  .barcol .b-lo { background: #d3dae3; border-radius: 4px 4px 0 0; }
+  .barcol:hover .b-hi { background: #1e5da8; }
+  .bars-x { display: flex; gap: 6px; margin-top: 5px; font-size: 10.5px; color: var(--muted); }
+  .bars-x span { flex: 1; min-width: 14px; text-align: center; }
+  .tag.sen-mid { background: #f1f5f9; color: var(--muted); }
+  .sec-h { margin: 0 0 10px; font-size: 14px; }
+  .sec-sub { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: 8px; }
+  .f-group { display: flex; gap: 6px; padding: 4px 8px; border: 1px dashed var(--line);
+             border-radius: 8px; }
+  .f-group label { font-size: 12.5px; }
+  .tag.sen-senior { background: #ffedd5; color: var(--warn); }
+  .tag.sen-junior { background: #dcfce7; color: var(--good); }
+  .tag.role { background: #e0e7ff; color: #4338ca; font-weight: 600; }
+  .tier-b { font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 700; }
+  .tier-b.top { background: var(--gold-bg); color: var(--gold); }
+  .tier-b.catchup { background: #f1f5f9; color: var(--muted); }
+  .tier-b.pinned { background: #eef2ff; color: var(--accent); }
+  .job { background: var(--card); border: 1px solid var(--line); border-radius: 9px;
+         margin-bottom: 8px; }
+  .job.shortlisted { border-left: 3px solid var(--accent); }
+  .job.skipped { opacity: .45; }
+  .job-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer; }
+  .score { min-width: 38px; text-align: center; font-weight: 700; font-size: 15px;
+           border-radius: 7px; padding: 4px 0; background: #eef2ff; color: var(--accent); }
+  .score.gold { background: var(--gold-bg); color: var(--gold); }
+  .job .main { flex: 1; min-width: 0; }
+  .job .t1 { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .job .t1 a { color: var(--ink); font-weight: 600; text-decoration: none; }
+  .job .t1 a:hover { color: var(--accent); }
+  .job .t2 { color: var(--muted); font-size: 12.5px; white-space: nowrap;
+             overflow: hidden; text-overflow: ellipsis; }
+  .card-tags { display: flex; gap: 5px; align-items: center; flex-wrap: wrap;
+               justify-content: flex-end; max-width: 300px; }
+  .tag { font-size: 11px; padding: 1px 7px; border-radius: 10px; white-space: nowrap; }
+  .tag.heavy, .tag.positive { background: #dcfce7; color: var(--good); }
+  .tag.yes { background: #fef3c7; color: var(--warn); }
+  .tag.unknown, .tag.low, .tag.none { background: #f1f5f9; color: var(--muted); }
+  .tag.age0, .tag.age1 { background: #fee2e2; color: var(--bad); font-weight: 600; }
+  .tag.bar-high { background: #f3e8ff; color: #7e22ce; }
+  .tag.kw { background: #eef2ff; color: var(--accent); }
+  .job .acts { display: flex; gap: 6px; }
+  .acts button { border: 1px solid var(--line); background: var(--card); border-radius: 7px;
+                 padding: 4px 10px; cursor: pointer; font-size: 12.5px; }
+  .acts button:hover { border-color: var(--accent); color: var(--accent); }
+  /* Expanded detail */
+  .detail { border-top: 1px solid var(--line); padding: 12px 16px 14px;
+            display: grid; grid-template-columns: 300px 1fr; gap: 16px; }
+  @media (max-width: 760px) { .detail { grid-template-columns: 1fr; } }
+  .detail h4 { margin: 0 0 6px; font-size: 12px; color: var(--muted); font-weight: 500; }
+  .parts { font-size: 12.5px; }
+  .parts div { display: flex; justify-content: space-between; padding: 1px 0; }
+  .parts .neg { color: var(--bad); }
+  .parts .pos { color: var(--good); }
+  .kws { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 10px; }
+  .story { background: var(--gold-bg); border-radius: 7px; padding: 7px 10px;
+           font-size: 12.5px; margin-bottom: 6px; }
+  .story b { color: var(--gold); }
+  .snippet { font-size: 12px; color: var(--good); background: #f0fdf4;
+             border-radius: 7px; padding: 6px 10px; margin-top: 8px; }
+  .jd { font-size: 12.5px; color: #3a4356; white-space: pre-wrap; max-height: 320px;
+        overflow-y: auto; background: #fafbfc; border: 1px solid var(--line);
+        border-radius: 7px; padding: 10px 12px; }
+  #more { display: block; margin: 14px auto; padding: 7px 26px; border: 1px solid var(--line);
+          background: var(--card); border-radius: 8px; cursor: pointer; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; background: var(--card);
+          border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  th { color: var(--muted); font-weight: 500; background: #fafbfc; }
+  tr:last-child td { border-bottom: none; }
+  td select { padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; font-size: 12.5px; }
+  .st { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #f1f5f9; color: var(--muted); }
+  .st.screen, .st.tech, .st.onsite { background: #fef3c7; color: var(--warn); }
+  .st.offer { background: #dcfce7; color: var(--good); }
+  .st.rejected, .st.ghosted { background: #fee2e2; color: var(--bad); }
+  .empty { color: var(--muted); text-align: center; padding: 40px 0; }
+  /* Apply mode */
+  .apply-wrap { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+  @media (max-width: 860px) { .apply-wrap { grid-template-columns: 1fr; } }
+  .queue { max-height: 78vh; overflow-y: auto; }
+  .q-item { padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+            margin-bottom: 6px; cursor: pointer; background: var(--card); }
+  .q-item.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .q-item .qc { font-weight: 600; font-size: 13px; display: flex; gap: 6px; align-items: baseline; }
+  .q-item .qt { color: var(--muted); font-size: 12px; white-space: nowrap;
+                overflow: hidden; text-overflow: ellipsis; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 9px;
+           padding: 16px 18px; }
+  .panel h3 { margin: 0 0 2px; font-size: 15px; }
+  .panel h4 { margin: 16px 0 6px; font-size: 12px; color: var(--muted); font-weight: 500; }
+  .qa { border-top: 1px solid var(--line); padding: 7px 0; display: flex; gap: 10px;
+        align-items: baseline; }
+  .qa .q { color: var(--muted); font-size: 12px; flex: 0 0 260px; }
+  .qa .a { flex: 1; font-size: 12.5px; }
+  .qa .warn-note { color: var(--bad); font-size: 11.5px; }
+  .copy { border: 1px solid var(--line); background: var(--card); border-radius: 6px;
+          padding: 2px 9px; cursor: pointer; font-size: 11px; white-space: nowrap; }
+  .copy:hover { border-color: var(--accent); color: var(--accent); }
+  #draft { width: 100%; min-height: 170px; font: 12.5px/1.6 -apple-system, sans-serif;
+           padding: 10px 12px; border: 1px solid var(--line); border-radius: 7px; resize: vertical; }
+  .apply-row { display: flex; gap: 8px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+  .apply-row select, .apply-row input[type=text] { padding: 6px 8px; border: 1px solid var(--line);
+           border-radius: 7px; font-size: 12.5px; }
+  .btn-primary { background: var(--accent); color: #fff; border: none; border-radius: 7px;
+                 padding: 7px 18px; cursor: pointer; font-size: 13px; }
+  .btn-ghost { background: var(--card); color: var(--muted); border: 1px solid var(--line);
+               border-radius: 7px; padding: 7px 14px; cursor: pointer; font-size: 13px; }
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+           background: var(--ink); color: #fff; padding: 8px 18px; border-radius: 8px;
+           font-size: 13px; opacity: 0; transition: opacity .25s; pointer-events: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>jobpipe board</h1>
+  <div id="stats"></div>
+  <nav>
+    <button id="tab-golden" class="on">⭐ Golden</button>
+    <button id="tab-apply">🚀 Apply</button>
+    <button id="tab-jobs">Jobs</button>
+    <button id="tab-saved">☆ Saved</button>
+    <button id="tab-apps">Pipeline</button>
+    <button id="tab-overview">📊 Overview</button>
+  </nav>
+</header>
+
+<main>
+  <div class="filters" id="filterbar">
+    <input type="text" id="f-q" placeholder="Search company / title / location…">
+    <span class="f-group" title="Role type (classified by title)">
+      <label><input type="checkbox" class="f-role" value="de" checked> DE</label>
+      <label><input type="checkbox" class="f-role" value="ae" checked> AE</label>
+      <label><input type="checkbox" class="f-role" value="mle" checked> MLE</label>
+      <label><input type="checkbox" class="f-role" value="ds" checked> DS</label>
+      <label><input type="checkbox" class="f-role" value="bi" checked> BI</label>
+      <label><input type="checkbox" class="f-role" value="swe"> SWE</label>
+    </span>
+    <span class="f-group" title="Seniority: judged by LLM from the JD; falls back to title keywords without LLM data">
+      <label><input type="checkbox" class="f-sen" value="junior" checked> Junior</label>
+      <label><input type="checkbox" class="f-sen" value="mid" checked> Mid</label>
+      <label><input type="checkbox" class="f-sen" value="senior"> Senior</label>
+    </span>
+    <span class="f-group" title="Company H-1B sponsorship record (USCIS data)">
+      <label><input type="checkbox" class="f-sp" value="positive" checked> Stated</label>
+      <label><input type="checkbox" class="f-sp" value="heavy" checked> Heavy</label>
+      <label><input type="checkbox" class="f-sp" value="yes" checked> Yes</label>
+      <label><input type="checkbox" class="f-sp" value="low" checked> Low</label>
+      <label><input type="checkbox" class="f-sp" value="unknown"> Unknown</label>
+    </span>
+    <select id="f-yoe" title="Minimum YoE required by the JD">
+      <option value="">Any YoE</option>
+      <option value="2">≤2 yrs</option>
+      <option value="3">≤3 yrs</option>
+    </select>
+    <span id="f-jobs-only">
+      <select id="f-age">
+        <option value="1">Last 24h</option>
+        <option value="2">Last 48h</option>
+        <option value="4">Last 96h</option>
+        <option value="7" selected>Last 7 days</option>
+        <option value="14">Last 14 days</option>
+        <option value="">Any (30 days)</option>
+      </select>
+      <select id="f-status">
+        <option value="new">New</option>
+        <option value="shortlisted">Saved</option>
+        <option value="skipped">Skipped</option>
+        <option value="">All</option>
+      </select>
+      <label>Score ≥ <input type="text" id="f-score" value="" size="3"></label>
+    </span>
+    <span id="count"></span>
+  </div>
+  <p class="legend">Tags: <b>H1B heavy/yes/low</b> = company USCIS records over the last two years ≥25 / 3–24 / 1–2 ·
+    <b>Stated</b> = the JD explicitly promises sponsorship · <b>Junior/Mid/Senior</b> = judged by LLM from the JD (title keywords when not extracted) ·
+    <b>N+ yrs</b> = minimum YoE required by the JD (LLM first, regex fallback)</p>
+
+  <section id="view-golden">
+    <h4 class="sec-h">⭐ TOP · last 48h <span class="sec-sub">non-senior · ≤2 yrs (3-yr jobs pass with score ≥80) · score ≥60 · sponsor on record · not high-bar</span></h4>
+    <div id="golden-top"></div>
+    <h4 class="sec-h" style="margin-top:22px">🕐 Catch-up · 48–96h <span class="sec-sub">≤3 yrs; safety net for weekends or a two-day gap</span></h4>
+    <div id="golden-catchup"></div>
+  </section>
+
+  <section id="view-saved" hidden>
+    <p class="hint">Saved = manually pinned jobs; they always sit at the front of the apply queue (archived with the rest after 30 days).</p>
+    <div id="saved-list"></div>
+  </section>
+
+  <section id="view-apply" hidden>
+    <p class="hint" id="apply-summary">Today's apply queue is on the left. Flow: open the job page → extension fills the basics → answer sheet covers the rest → you hit submit → come back and log it.</p>
+    <div class="apply-wrap">
+      <div class="queue" id="queue"></div>
+      <div class="panel" id="apply-panel"><div class="empty">Pick a job on the left to start</div></div>
+    </div>
+  </section>
+
+  <section id="view-jobs" hidden>
+    <div id="jobs-list"></div>
+    <button id="more" hidden>Load more</button>
+  </section>
+
+  <section id="view-apps" hidden>
+    <p class="hint" id="apps-summary"></p>
+    <div id="apps"></div>
+  </section>
+
+  <section id="view-overview" hidden>
+    <div class="tiles" id="ov-tiles"></div>
+    <h4 class="sec-h">Daily actions <span class="sec-sub">applications + referral asks + networking + follow-ups (last 16 weeks; darker = more)</span></h4>
+    <div class="viz-card"><div id="ov-heat"></div></div>
+    <h4 class="sec-h" style="margin-top:20px">New matching jobs per day <span class="sec-sub">last 21 days, by first-seen date</span>
+      <span class="viz-legend"><i style="background:#2a78d6"></i>High score (≥60)<i style="background:#d3dae3;margin-left:10px"></i>Other</span></h4>
+    <div class="viz-card"><div id="ov-bars"></div></div>
+  </section>
+</main>
+<div id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => (s ?? '').toString().replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.style.opacity = 1;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.style.opacity = 0, 1800);
+}
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || r.status);
+  return j;
+}
+
+/* ── Header stats ── */
+async function loadStats() {
+  const s = await api('/api/stats');
+  const funnel = s.funnel_order.map(k => `${k} <b>${s.funnel[k] || 0}</b>`).join(' · ');
+  $('#stats').innerHTML =
+    `⭐ TOP <b>${s.golden_new}</b> ｜ 🕐 Catch-up <b>${s.catchup_new}</b>` +
+    ` ｜ New <b>${s.jobs.new || 0}</b>｜ ☆ <b>${s.jobs.shortlisted || 0}</b>｜ Funnel: ${funnel}` +
+    `｜ Actions this week <b>${Object.values(s.week).reduce((a, b) => a + b, 0)}</b>`;
+}
+
+/* ── Job card (one shared renderer for every section) ── */
+const ROLE_LABEL = { de: 'DE', ae: 'AE', mle: 'MLE', ds: 'DS', bi: 'BI', swe: 'SWE' };
+const SEN_LABEL = { junior: 'Junior', mid: 'Mid', senior: 'Senior' };
+const SP_LABEL = { heavy: 'H1B·heavy', yes: 'H1B·yes', low: 'H1B·low', unknown: 'H1B·?',
+                   none: 'H1B·none', positive: 'Stated sponsor' };
+const SP_TIP = { heavy: 'Company has ≥25 USCIS H-1B records over the last two years: reliable sponsor',
+                 yes: '3–24 records: sponsors routinely', low: '1–2 records: has sponsored, but not the norm',
+                 unknown: 'No H-1B data yet', none: 'No records found (legal entity name may not match)',
+                 positive: 'The JD explicitly promises sponsorship' };
+function ageText(a) {
+  return a == null ? '' : a === 0 ? 'posted today' : a === 1 ? 'posted yesterday' : `posted ${a} days ago`;
+}
+function jobCard(j, gold) {
+  const meta = [esc(j.location || ''), ageText(j.age)].filter(Boolean).join(' · ');
+  return `
+    <div class="job ${j.status}" data-id="${j.id}">
+      <div class="job-row">
+        <div class="score ${gold ? 'gold' : ''}" title="Match score (0-100)">${j.score ?? '–'}</div>
+        <div class="main">
+          <div class="t1">
+            <a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.company)} — ${esc(j.title)}</a>
+          </div>
+          <div class="t2">${meta}</div>
+        </div>
+        <div class="card-tags">
+          ${j.role ? `<span class="tag role" title="Role type">${ROLE_LABEL[j.role] || j.role}</span>` : ''}
+          ${j.seniority ? `<span class="tag sen-${j.seniority}" title="Seniority (judged by LLM from the JD)">${SEN_LABEL[j.seniority] || j.seniority}</span>` : ''}
+          ${j.req_yoe != null ? `<span class="tag unknown" title="Minimum YoE required by the JD">${j.req_yoe}+ yrs</span>` : ''}
+          <span class="tag ${j.sponsor_flag}" title="${SP_TIP[j.sponsor_flag] || ''}">${SP_LABEL[j.sponsor_flag] || j.sponsor_flag}</span>
+          ${j.bar === 'high' ? '<span class="tag bar-high" title="High-bar company: cold applies rarely convert">high bar</span>' : ''}
+        </div>
+        <div class="acts">
+          ${j.status === 'new' ? `<button data-act="shortlisted">☆ Save</button><button data-act="skipped" title="Not applying; hide it from the list">✕ Skip</button>`
+             : j.status === 'shortlisted' ? `<button data-act="new" title="Back to new; removed from Saved and the apply queue">↩ Unsave</button>`
+             : `<button data-act="new" title="Back to new; reappears in the list">↩ Restore</button>`}
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ── Expanded detail ── */
+const PART_NAMES = { title: 'Title match', yoe: 'YoE fit', junior_title: 'Junior signal',
+  title_penalty: 'Title seniority', keywords: 'Keywords', penalty: 'Off-direction',
+  location: 'Location', sponsorship: 'sponsorship', bar: 'Company bar', freshness: 'Freshness' };
+async function toggleDetail(card) {
+  const open = card.querySelector('.detail');
+  if (open) { open.remove(); return; }
+  const d = await api('/api/jobs/' + card.dataset.id);
+  const parts = Object.entries(d.parts).filter(([, v]) => v !== 0)
+    .map(([k, v]) => `<div><span>${PART_NAMES[k] || k}</span>
+      <span class="${v < 0 ? 'neg' : 'pos'}">${v > 0 ? '+' : ''}${v}</span></div>`).join('');
+  const llm = d.llm ? `
+      <h4>🤖 LLM insights</h4>
+      <div class="story" style="background:#f0f9ff">
+        ${esc(d.llm.summary || '')}<br>
+        <span style="color:var(--muted);font-size:11.5px">
+          YoE ${d.llm.min_yoe ?? 'unspecified'} · ${esc(d.llm.seniority || '')} · sponsor ${esc(d.llm.sponsorship || '')}
+        </span>
+        ${(d.llm.flags || []).map(f => `<div style="font-size:12px">▸ ${esc(f)}</div>`).join('')}
+      </div>` : '';
+  const el = document.createElement('div');
+  el.className = 'detail';
+  el.innerHTML = `
+    <div>
+      ${llm}
+      <h4>Score breakdown${d.yoe && d.yoe[0] != null ? ` (JD asks ${d.yoe[0]}${d.yoe[1] > d.yoe[0] ? '–' + d.yoe[1] : '+'} yrs)` : ''}</h4>
+      <div class="parts">${parts}</div>
+      <h4 style="margin-top:10px">Matched keywords</h4>
+      <div class="kws">${d.hits.map(h => `<span class="tag kw">${esc(h)}</span>`).join('') || '—'}</div>
+      ${d.stories.length ? `<h4>Suggested story</h4>` + d.stories.map(s =>
+        `<div class="story"><b>${esc(s.name)}</b> (${s.matches} trigger words)<br>${esc(s.pitch)}</div>`).join('') : ''}
+      ${d.snippet ? `<div class="snippet">✓ From the JD: “…${esc(d.snippet)}…”</div>` : ''}
+    </div>
+    <div>
+      <h4>JD preview${d.desc_truncated ? ' (first 2000 chars — click the title for the full JD)' : ''}</h4>
+      <div class="jd">${esc(d.desc_preview) || '(no description)'}</div>
+    </div>`;
+  card.appendChild(el);
+}
+
+/* ── List loading (filters apply to Golden/Jobs/Saved alike) ── */
+let offset = 0;
+function filterParams(mode) {
+  // mode: 'jobs' uses everything; 'golden'/'saved' skip age & status (each has a fixed structure)
+  const sp = $$('.f-sp').filter(c => c.checked).map(c => c.value).join(',');
+  const roles = $$('.f-role').filter(c => c.checked).map(c => c.value);
+  const sens = $$('.f-sen').filter(c => c.checked).map(c => c.value);
+  const p = new URLSearchParams({ q: $('#f-q').value, sponsor: sp });
+  if (roles.length && roles.length < 6) p.set('role', roles.join(','));
+  if (sens.length && sens.length < 3) p.set('seniority', sens.join(','));
+  if ($('#f-yoe').value) p.set('max_yoe', $('#f-yoe').value);
+  if (mode === 'jobs') {
+    p.set('status', $('#f-status').value);
+    if ($('#f-age').value) p.set('max_age', $('#f-age').value);
+    if ($('#f-score').value.trim()) p.set('min_score', $('#f-score').value.trim());
+  }
+  if (mode === 'saved') p.set('status', 'shortlisted');
+  return p;
+}
+async function loadJobs(append) {
+  if (!append) offset = 0;
+  const p = filterParams('jobs');
+  p.set('offset', offset); p.set('limit', 50);
+  const d = await api('/api/jobs?' + p);
+  const html = d.jobs.map(j => jobCard(j, false)).join('');
+  if (append) $('#jobs-list').insertAdjacentHTML('beforeend', html);
+  else $('#jobs-list').innerHTML = html || '<div class="empty">No matching jobs</div>';
+  offset += d.jobs.length;
+  $('#count').textContent = `${offset} / ${d.total}`;
+  $('#more').hidden = !d.has_more;
+}
+async function loadGolden() {
+  const p = filterParams('golden').toString();
+  const [t, c] = await Promise.all([
+    api(`/api/jobs?golden=1&limit=100&status=new&${p}`), api(`/api/jobs?golden=2&limit=100&status=new&${p}`)]);
+  const roleBd = list => {
+    const cnt = {};
+    list.forEach(j => cnt[j.role] = (cnt[j.role] || 0) + 1);
+    return Object.entries(cnt).map(([k, v]) => `${ROLE_LABEL[k] || k} ${v}`).join(' · ');
+  };
+  const all = t.jobs.concat(c.jobs);
+  $('#count').textContent = `TOP ${t.total} · Catch-up ${c.total}` + (all.length ? `｜${roleBd(all)}` : '');
+  $('#golden-top').innerHTML = t.jobs.length
+    ? t.jobs.map(j => jobCard(j, true)).join('')
+    : '<div class="empty">No TOP jobs yet today — check back after the next scheduled fetch</div>';
+  $('#golden-catchup').innerHTML = c.jobs.length
+    ? c.jobs.map(j => jobCard(j, false)).join('')
+    : '<div class="empty">Catch-up section is empty</div>';
+}
+async function loadSaved() {
+  const d = await api('/api/jobs?limit=200&' + filterParams('saved'));
+  $('#count').textContent = `${d.total} saved`;
+  $('#saved-list').innerHTML = d.jobs.length
+    ? d.jobs.map(j => jobCard(j, false)).join('')
+    : '<div class="empty">Nothing saved yet — hit ☆ on the Golden or Jobs tab</div>';
+}
+
+/* ── Events (shared by the lists) ── */
+async function listClick(e, reload) {
+  const btn = e.target.closest('button[data-act]');
+  if (btn) {
+    const id = btn.closest('.job').dataset.id;
+    try {
+      await api(`/api/jobs/${id}/status`, { method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: btn.dataset.act }) });
+      toast({shortlisted: 'Saved', skipped: 'Skipped', new: 'Restored'}[btn.dataset.act]);
+      reload(); loadStats();
+    } catch (err) { toast('Failed: ' + err.message); }
+    return;
+  }
+  if (e.target.closest('a')) return;             // let link clicks through
+  const row = e.target.closest('.job-row');
+  if (row) toggleDetail(row.closest('.job')).catch(err => toast('Failed: ' + err.message));
+}
+$('#golden-top').addEventListener('click', e => listClick(e, loadGolden));
+$('#golden-catchup').addEventListener('click', e => listClick(e, loadGolden));
+$('#saved-list').addEventListener('click', e => listClick(e, loadSaved));
+$('#jobs-list').addEventListener('click', e => listClick(e, () => loadJobs(false)));
+$('#more').onclick = () => loadJobs(true);
+// Filter change -> reload the current section (Golden/Jobs/Saved share one filter bar)
+const FILTERED_TABS = new Set(['golden', 'jobs', 'saved']);
+function refilter() { if (FILTERED_TABS.has(currentTab)) TABS[currentTab](); }
+let deb;
+['#f-q', '#f-score'].forEach(s => $(s).addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(refilter, 300); }));
+$$('.f-sp, .f-role, .f-sen').forEach(c => c.addEventListener('change', refilter));
+['#f-status', '#f-age', '#f-yoe'].forEach(s => $(s).addEventListener('change', refilter));
+
+/* ── Pipeline ── */
+async function loadApps() {
+  const d = await api('/api/applications');
+  const all = [...d.funnel, ...d.terminal];
+  const A = d.applications;
+  const alive = A.filter(a => ['applied','screen','tech','onsite'].includes(a.status));
+  const iv = A.filter(a => ['screen','tech','onsite','offer'].includes(a.status));
+  $('#apps-summary').textContent = A.length
+    ? `Applied to ${A.length} · in progress ${alive.length} · reached interviews ${iv.length}` +
+      (A.length >= 20 ? ` · apply→interview rate ${Math.round(100 * iv.length / A.length)}%` : '') +
+      (alive.length ? ` · longest idle ${Math.max(...alive.map(a => a.age))} days` : '')
+    : 'No applications yet — a funnel summary will appear here after your first one.';
+  $('#apps').innerHTML = d.applications.length ? `
+    <table><thead><tr>
+      <th>ID</th><th>Company / Title</th><th>Channel</th><th>Applied</th><th>Days</th><th>Stage</th><th>Advance</th>
+    </tr></thead><tbody>` + d.applications.map(a => `
+      <tr>
+        <td>#${a.id}</td>
+        <td>${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.company)}</a>` : esc(a.company)}
+            <span style="color:var(--muted)"> — ${esc(a.title)}</span>
+            ${a.notes ? `<div style="color:var(--muted);font-size:12px">${esc(a.notes)}</div>` : ''}</td>
+        <td>${esc(a.channel)}</td><td>${esc(a.applied)}</td><td>${a.age}</td>
+        <td><span class="st ${a.status}">${a.status}</span></td>
+        <td><select data-id="${a.id}">
+          <option value="">→</option>
+          ${all.filter(s => s !== a.status).map(s => `<option value="${s}">${s}</option>`).join('')}
+        </select></td>
+      </tr>`).join('') + '</tbody></table>'
+    : '<div class="empty">No applications yet</div>';
+}
+$('#apps').addEventListener('change', async e => {
+  const sel = e.target.closest('select[data-id]');
+  if (!sel || !sel.value) return;
+  try {
+    await api(`/api/applications/${sel.dataset.id}/status`, { method: 'POST',
+      headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ status: sel.value }) });
+    toast(`#${sel.dataset.id} → ${sel.value}`);
+    loadApps(); loadStats();
+  } catch (err) { toast('Failed: ' + err.message); sel.value = ''; }
+});
+
+/* ── Apply mode ── */
+let queue = [], channels = [], answers = null, selId = null;
+async function loadApply() {
+  const [q, a] = await Promise.all([api('/api/queue'), answers ? Promise.resolve(answers) : api('/api/answers')]);
+  answers = a; queue = q.queue; channels = q.channels;
+  const tc = {};
+  queue.forEach(j => tc[j.tier] = (tc[j.tier] || 0) + 1);
+  $('#apply-summary').textContent = queue.length
+    ? `Today's queue: ${queue.length} (☆ saved ${tc.pinned || 0} · TOP ${tc.top || 0} · catch-up ${tc.catchup || 0}). Flow: open the job page → extension fills the form → answer sheet covers the rest → you hit submit → come back and log it.`
+    : 'Queue cleared 🎉 New jobs will arrive after the next scheduled fetch.';
+  renderQueue();
+  if (queue.length && !queue.some(j => j.id === selId)) selId = queue[0].id;
+  if (selId) renderPanel();
+  else $('#apply-panel').innerHTML = '<div class="empty">Queue is empty — everything for today is done 🎉</div>';
+}
+const TIER_LABEL = { pinned: '☆', top: 'TOP', catchup: 'C-UP' };
+function renderQueue() {
+  $('#queue').innerHTML = queue.length ? queue.map(j => `
+    <div class="q-item ${j.id === selId ? 'sel' : ''}" data-id="${j.id}">
+      <div class="qc"><span class="score" style="min-width:32px;font-size:12px">${j.score}</span>
+        ${esc(j.company)} <span class="tier-b ${j.tier}">${TIER_LABEL[j.tier] || ''}</span></div>
+      <div class="qt">${esc(j.title)}</div>
+    </div>`).join('') : '<div class="empty">Queue is empty</div>';
+}
+$('#queue').addEventListener('click', e => {
+  const it = e.target.closest('.q-item');
+  if (!it) return;
+  selId = it.dataset.id; renderQueue(); renderPanel();
+});
+async function renderPanel() {
+  const j = queue.find(x => x.id === selId);
+  if (!j) return;
+  const std = (answers.standard || []).map((s, i) => `
+    <div class="qa"><div class="q">${esc(s.q)}</div><div class="a">${esc(s.a)}
+      ${s.note ? `<div class="warn-note">${esc(s.note)}</div>` : ''}</div>
+      <button class="copy" data-copy="${esc(s.a)}">Copy</button></div>`).join('');
+  $('#apply-panel').innerHTML = `
+    <h3><a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.company)} — ${esc(j.title)}</a></h3>
+    <div class="t2" style="color:var(--muted);font-size:12.5px">${esc(j.location || '')}  ${esc(j.posted || '')}
+      <span class="tag ${j.sponsor_flag}">${j.sponsor_flag}</span></div>
+    <div class="apply-row">
+      <a href="${esc(j.url)}" target="_blank" rel="noopener"><button class="btn-primary">① Open the job page</button></a>
+    </div>
+    <h4>② Standard screening questions (click to copy)</h4>
+    ${std}
+    <h4>③ Why this role? (draft assembled from this JD — tweak a couple of lines before using)
+      <button class="copy" id="copy-draft">Copy all</button></h4>
+    <textarea id="draft">Generating…</textarea>
+    <h4>④ Log it after submitting</h4>
+    <div class="apply-row">
+      <select id="ap-channel">${channels.map(c => `<option ${c === 'cold' ? 'selected' : ''}>${c}</option>`).join('')}</select>
+      <input type="text" id="ap-resume" value="base" size="8" title="Resume version">
+      <label style="font-size:12.5px"><input type="checkbox" id="ap-tailored"> Tailored</label>
+      <input type="text" id="ap-note" placeholder="Note (optional)" size="18">
+      <button class="btn-primary" id="ap-done">✓ Applied, log it</button>
+      <button class="btn-ghost" id="ap-skip">✕ Skip this job</button>
+    </div>`;
+  $('#copy-draft').onclick = () => { navigator.clipboard.writeText($('#draft').value); toast('Draft copied'); };
+  $('#ap-done').onclick = async () => {
+    try {
+      await api(`/api/jobs/${j.id}/apply`, { method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ channel: $('#ap-channel').value, resume: $('#ap-resume').value,
+          tailored: $('#ap-tailored').checked, note: $('#ap-note').value || null }) });
+      toast(`✓ Logged: ${j.company}`); loadApply(); loadStats();
+    } catch (err) { toast('Failed: ' + err.message); }
+  };
+  $('#ap-skip').onclick = async () => {
+    try {
+      await api(`/api/jobs/${j.id}/status`, { method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: 'skipped' }) });
+      toast('Skipped'); loadApply(); loadStats();
+    } catch (err) { toast('Failed: ' + err.message); }
+  };
+  try {
+    const d = await api(`/api/jobs/${j.id}/draft`);
+    if (selId !== j.id) return;          // user switched to another job; don't fill the wrong panel
+    const ta = $('#draft');
+    if (ta) ta.value = d.draft;
+  } catch { if (selId === j.id) { const ta = $('#draft'); if (ta) ta.value = '(draft generation failed)'; } }
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('button.copy[data-copy]');
+  if (b) { navigator.clipboard.writeText(b.dataset.copy); toast('Copied'); }
+});
+
+/* ── Overview ── */
+const HEAT_RAMP = ['#eef1f4', '#bfe3c7', '#7fc898', '#3d9d63', '#1c6b40'];
+const MONTH_S = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const isoDay = d => d.toISOString().slice(0, 10);
+async function loadOverview() {
+  const d = await api('/api/overview');
+  const t = d.tiles;
+  $('#ov-tiles').innerHTML = [
+    [t.keep, 'Matching jobs in DB'], [t.new_today, 'New today'], [t.new_week, 'New this week'],
+    [t.apps_week, 'Applies this week'], [t.acts_week, 'Actions this week'],
+    [t.open_apps, 'Open pipelines'], [t.llm_cov + '%', 'LLM coverage'],
+  ].map(([v, l]) => `<div class="tile"><div class="tv">${v}</div><div class="tl">${l}</div></div>`).join('');
+
+  // Heatmap: columns = weeks (starting Sunday), rows = weekdays; darker = more actions
+  const byDay = Object.fromEntries(d.heat.map(r => [r.day, r]));
+  const today = new Date(); today.setHours(12, 0, 0, 0);
+  const start = new Date(today); start.setDate(start.getDate() - 111);
+  start.setDate(start.getDate() - start.getDay());
+  let cells = '', months = '', prevMonth = -1;
+  for (let dt = new Date(start), i = 0; dt <= today; dt.setDate(dt.getDate() + 1), i++) {
+    if (i % 7 === 0) {
+      const m = dt.getMonth();
+      months += `<span style="width:14px;overflow:visible;white-space:nowrap">${m !== prevMonth ? MONTH_S[m] : ''}</span>`;
+      prevMonth = m;
+    }
+    const key = isoDay(dt);
+    const r = byDay[key];
+    const n = r ? r.total : 0;
+    const lvl = n === 0 ? 0 : n <= 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4;
+    const tip = r ? `${key} · applies ${r.applies} · other actions ${r.total - r.applies}` : `${key} · no activity`;
+    cells += `<div class="heat-cell" style="background:${HEAT_RAMP[lvl]}" title="${tip}"></div>`;
+  }
+  $('#ov-heat').innerHTML = `<div class="heat-months">${months}</div>
+    <div class="heat-grid">${cells}</div>
+    <div class="heat-scale">Less ${HEAT_RAMP.map(c => `<i class="heat-cell" style="background:${c};display:inline-block"></i>`).join('')} More</div>`;
+
+  // New matching jobs per day: emphasis stacked bars (high score = accent, rest = gray)
+  const nb = Object.fromEntries(d.newjobs.map(r => [r.d, r]));
+  const max = Math.max(1, ...d.newjobs.map(r => r.n));
+  let bars = '', xs = '';
+  for (let i = 20; i >= 0; i--) {
+    const dt = new Date(today); dt.setDate(dt.getDate() - i);
+    const key = isoDay(dt);
+    const r = nb[key] || { hi: 0, n: 0 };
+    const H = 132;
+    bars += `<div class="barcol" title="${key} · ${r.n} new (${r.hi} high score)">
+      <div class="barseg b-lo" style="height:${Math.round((r.n - r.hi) / max * H)}px"></div>
+      <div class="barseg b-hi" style="height:${Math.round(r.hi / max * H)}px"></div></div>`;
+    xs += `<span>${i % 5 === 0 ? (dt.getMonth() + 1) + '/' + dt.getDate() : ''}</span>`;
+  }
+  $('#ov-bars').innerHTML = `<div class="bars">${bars}</div><div class="bars-x">${xs}</div>`;
+}
+
+/* ── Tab switching ── */
+const TABS = { golden: loadGolden, apply: loadApply, jobs: () => loadJobs(false), saved: loadSaved, apps: loadApps, overview: loadOverview };
+let currentTab = 'golden';
+function show(tab) {
+  currentTab = tab;
+  for (const t of Object.keys(TABS)) {
+    $('#view-' + t).hidden = t !== tab;
+    $('#tab-' + t).classList.toggle('on', t === tab);
+  }
+  const filtered = FILTERED_TABS.has(tab);
+  $('#filterbar').hidden = !filtered;
+  $('.legend', document).hidden = !filtered;
+  $('#f-jobs-only').style.display = tab === 'jobs' ? '' : 'none';
+  TABS[tab]();
+}
+$('#tab-golden').onclick = () => show('golden');
+$('#tab-apply').onclick = () => show('apply');
+$('#tab-jobs').onclick = () => show('jobs');
+$('#tab-saved').onclick = () => show('saved');
+$('#tab-apps').onclick = () => show('apps');
+$('#tab-overview').onclick = () => show('overview');
+
+loadStats(); show('golden');
+</script>
+</body>
+</html>

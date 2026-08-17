@@ -1,0 +1,466 @@
+# Candidate profile — the single source of truth for scoring rules.
+# Edit this file to change how the shortlist is ranked; no code changes needed.
+
+candidate:
+  name: Jane Doe
+  current: Data Engineer @ Acme Corp (New York)
+  years_experience: 2
+  needs_sponsorship: true   # false disables all sponsorship-based rejection/scoring
+  visa: "F-1 OPT, needs H-1B sponsorship"
+  targets: [Data Engineer, Analytics Engineer, ML Platform Engineer]
+
+# ── Job title matching ───────────────────────────────────
+# A hit takes that tier's score (highest tier wins, no stacking). Lowercase substring match.
+titles:
+  strong: # 45 pts: core targets
+    - data engineer
+    - analytics engineer
+    - data platform engineer
+    - data infrastructure engineer
+    - data pipeline engineer
+    - big data engineer
+    - etl engineer
+  good: # 32 pts: adjacent directions worth surfacing
+    - machine learning engineer
+    - ml platform
+    - ml infrastructure
+    - mlops
+    - data infrastructure
+    - platform engineer, data
+    - software engineer, data
+    - backend engineer, data
+    - data scientist   # promoted tier: a legitimate target direction (eligible for the golden lane)
+    - ai engineer      # promoted tier: counts if you have production LLM experience (e.g. an LLM support bot or RAG system)
+    - llm engineer
+    - genai engineer
+    - generative ai engineer
+    - applied ai engineer
+  weak: # 15 pts: reachable but not the main focus
+    - business intelligence engineer
+    - software engineer
+    - backend engineer
+    - data analyst
+
+# Any of these in the title = immediate reject (wrong seniority / wrong direction).
+# Entries match on **word boundaries**, not substrings: 'staff' will not hit 'staffing'.
+# A trailing * makes it a prefix match, e.g. 'idempoten*' covers idempotent / idempotency.
+title_blockers:
+  - staff
+  - principal
+  - director
+  - vp
+  - head of
+  - manager
+  - architect
+  - intern
+  - phd
+  - lead
+  - iii
+  - iv
+  - fellow
+  - apprentice
+
+# ── Years of experience (matters far more than the title) ──
+# Observed in practice: some "Data Engineer" titles ask for 8+ years in the body,
+# while some "Senior" titles only ask for 3. So the **JD body requirement is the
+# primary signal**; the title is only a fallback when the body states no number.
+# Example: a candidate with ~2 years of experience.
+yoe:
+  bonus: # the **minimum** years the JD asks for -> points (3+ years gets a mild penalty)
+    2: 18 # <=2 years: genuinely junior, the best targets
+    3: -4 # 3 years: reachable but discounted odds — should only surface when other signals are strong
+    4: -10 # 4 years: a stretch
+    5: -16 # 5 years: off target
+    7: -20 # 6-7 years: near-hopeless, but not rejected (the requirement may be inflated)
+  above_max_penalty: -20
+  reject_at: 8 # >=8 years: hard reject, don't waste a shortlist slot
+
+# Junior signals in the title, bonus points (highest tier wins, no stacking)
+junior_title_bonus:
+  junior: 14
+  entry level: 14
+  entry-level: 14
+  new grad: 14
+  new graduate: 14
+  university grad: 14
+  associate: 10
+  "i": 8 # "Analytics Engineer I"
+  "ii": 4 # "Data Engineer II" is usually still 2-3 years
+
+# Seniority penalties from the title — applied only when the JD body states no
+# years requirement (see the explanation in score.py)
+title_penalties:
+  senior: 18
+  sr: 18
+
+# ── Tech keywords ────────────────────────────────────────
+# Each hit scores once, capped at keyword_cap so long JDs can't farm points.
+keyword_cap: 30
+keywords:
+  # Your strongest stack — highest weights
+  bigquery: 6
+  pub/sub: 6
+  pubsub: 6
+  gcp: 5
+  google cloud: 5
+  airflow: 5
+  dbt: 4
+  kafka: 4
+  spark: 4
+  snowflake: 3
+  databricks: 3
+  # Capabilities you have genuinely shipped
+  streaming: 4
+  real-time: 3
+  idempoten*: 5 # idempotent / idempotency
+  data quality: 5
+  observability: 4
+  schema: 3
+  partition: 3
+  data model: 3
+  batch: 2
+  etl: 2
+  elt: 2
+  pipeline: 2
+  # Languages / fundamentals
+  python: 4
+  sql: 4
+  linux: 2
+  bash: 2
+  terraform: 2
+  docker: 2
+  kubernetes: 2
+  # MLE / ML Platform direction
+  feature store: 5
+  feature engineering: 4
+  ranking: 3
+  recommendation: 3
+  inference: 3
+  model serving: 3
+  # AI/LLM direction (weight these up if you have production LLM/RAG experience)
+  llm: 5
+  rag: 5
+  retrieval-augmented: 5
+  embedding*: 4      # embedding / embeddings
+  genai: 4
+  generative ai: 4
+  claude: 4
+  anthropic: 3
+  openai: 3
+  prompt: 3
+  vector: 3          # vector database / vector search
+  langchain: 2
+  # Domain bonuses (edit to match your own domain background)
+  ads: 3
+  advertising: 3
+  ctr: 3
+  healthcare: 2
+  biotech: 2
+
+# These signal the role points a different direction; each hit subtracts points
+keyword_penalties:
+  frontend: 6
+  react: 4
+  ios: 6
+  android: 6
+  game: 5
+  salesforce: 5
+  sap: 6
+  php: 5
+  ".net": 5
+  unreal: 6
+
+# ── Locations ────────────────────────────────────────────
+# Example tiers for an NYC-based candidate — edit for your metro (or run `python jobpipe.py init` to generate)
+# Tiered bonuses, not tiered rejection: any US location is kept, lower tiers
+# just score less. The highest matching tier wins. Tiers with us_anchor=true can
+# "rescue" a posting that also lists overseas locations
+# ("New York or London" should stay; "Remote - India" should not).
+locations:
+  tiers:
+    - name: nyc # New York metro area
+      points: 14
+      us_anchor: true
+      match: [new york, nyc, manhattan, brooklyn, queens, long island city,
+              white plains, yonkers, "ny"]
+    - name: remote # remote (can stay put)
+      points: 12
+      us_anchor: false
+      match: [remote, distributed, work from home, anywhere]
+    - name: nj # New Jersey towns adjacent to NYC
+      points: 11
+      us_anchor: true
+      match: [jersey city, hoboken, newark, weehawken, secaucus, edison,
+              iselin, princeton, morristown, parsippany, basking ridge,
+              berkeley heights, warren, new jersey, "nj"]
+    - name: ca_sea # California + Seattle (same priority)
+      points: 9
+      us_anchor: true
+      # Note: never add a bare "ca" — it would match "CA-Ontario-Toronto"-style
+      # Canadian strings and "rescue" overseas postings (via the us_anchor logic).
+      # California postings almost always carry a city name or "california".
+      match: [san francisco, "sf", bay area, palo alto, mountain view,
+              sunnyvale, san jose, santa clara, menlo park, cupertino,
+              redwood city, san mateo, oakland, los angeles, san diego,
+              irvine, california,
+              seattle, bellevue, redmond, kirkland, washington]
+    - name: tx # major Texas cities
+      points: 6
+      us_anchor: true
+      match: [austin, dallas, houston, san antonio, fort worth, plano,
+              irving, texas, "tx"]
+
+  # Other US locations (Boston, Chicago, Denver, ...): still included, just fewer points
+  default_points: 2
+
+  # A hit here rejects the posting — unless a us_anchor tier above also matched
+  blockers:
+    - india
+    - bengaluru
+    - bangalore
+    - hyderabad
+    - pune
+    - gurgaon
+    - noida
+    - london
+    - dublin
+    - edinburgh
+    - manchester
+    - toronto
+    - vancouver
+    - montreal
+    - poland
+    - warsaw
+    - krakow
+    - berlin
+    - munich
+    - amsterdam
+    - paris
+    - madrid
+    - barcelona
+    - lisbon
+    - zurich
+    - stockholm
+    - tel aviv
+    - tlv
+    - israel
+    - singapore
+    - tokyo
+    - seoul
+    - sydney
+    - melbourne
+    - shanghai
+    - beijing
+    - shenzhen
+    - hong kong
+    - taipei
+    - mexico
+    - brazil
+    - "são paulo"
+    - bogota
+    - buenos aires
+    - emea
+    - apac
+    - latam
+    - united kingdom
+    - germany
+    - canada
+    # Country and province names — big cities alone are not enough to block
+    - ontario          # "Ontario, CA" (the California city) is rescued by the california anchor, no conflict
+    - british columbia
+    - alberta
+    - quebec
+    - manitoba
+    - nova scotia
+    - saskatchewan
+    - calgary
+    - ottawa
+    - mississauga
+    - netherlands
+    - ireland
+    - greece
+    - athens
+    - switzerland
+    - zug
+    - geneva
+    - spain
+    - portugal
+    - romania
+    - bucharest
+    - norway
+    - oslo
+    - finland
+    - helsinki
+    - denmark
+    - copenhagen
+    - austria       # deliberately NOT vienna — Vienna, VA is a real US location in the DC metro
+    - italy
+    - milan
+    - belgium
+    - brussels
+    - luxembourg
+    - serbia
+    - belgrade
+    - hungary
+    - budapest
+    - czech
+    - prague
+    - slovakia
+    - bulgaria
+    - slovenia
+    - ljubljana
+    - estonia
+    - lithuania
+    - latvia
+    - ukraine
+    - turkey
+    - istanbul
+    - qatar
+    - doha
+    - uae
+    - dubai
+    - abu dhabi
+    - saudi
+    - riyadh
+    - egypt
+    - nigeria
+    - kenya
+    - south africa
+    - gurugram
+    - philippines
+    - manila
+    - vietnam
+    - indonesia
+    - jakarta
+    - malaysia
+    - thailand
+    - bangkok
+    - japan
+    - osaka
+    - new zealand
+    - auckland
+    - argentina
+    - uruguay
+    - chile
+    - peru
+    - colombia      # the country spelling; "British Columbia" is spelled columbia, no conflict
+    - costa rica
+    - sao paulo     # accent-free spelling, covers what "são paulo" misses
+    - apj           # region abbreviation, same idea as emea/apac
+    - europe
+    - china         # cities are blocked above; the country name also needs an entry
+    - iceland
+    - reykjavik
+    - "reykjavík"   # entries are literal matches, so the accented spelling needs its own line
+
+# ── Sponsorship detection ────────────────────────────────
+# Regexes run against the JD body. A negative hit = hard reject
+# (the posting is useless to a sponsorship-needing candidate).
+sponsorship:
+  negative:
+    - "not\\s+(?:be\\s+)?(?:able|willing)\\s+to\\s+(?:provide|offer|sponsor)"
+    - "(?:do(?:es)?\\s+not|will\\s+not|cannot|unable\\s+to)\\s+sponsor"
+    - "no\\s+(?:visa\\s+)?sponsorship"
+    - "without\\s+(?:the\\s+need\\s+for\\s+)?(?:visa\\s+)?sponsorship"
+    - "sponsorship\\s+is\\s+not\\s+(?:available|offered|provided)"
+    - "must\\s+be\\s+(?:a\\s+)?u\\.?s\\.?\\s+citizen"
+    - "u\\.?s\\.?\\s+citizenship\\s+(?:is\\s+)?required"
+    - "security\\s+clearance"
+    - "(?:active|ability to obtain).{0,20}clearance"
+    - "green\\s+card\\s+holders?\\s+only"
+    - "citizens?\\s+or\\s+permanent\\s+residents?\\s+only"
+  positive: # +10
+    - "(?:will|can|do)\\s+sponsor"
+    - "visa\\s+sponsorship\\s+(?:is\\s+)?available"
+    - "sponsorship\\s+(?:is\\s+)?(?:available|offered|provided)"
+    - "h-?1b\\s+(?:transfer|sponsorship)"
+    - "we\\s+sponsor"
+
+# ── Company-level sponsorship track record bonus (from USCIS H-1B data) ──
+# Thresholds calibrated against the real FY2022+FY2023 distribution, see jpipe/sponsor.py
+sponsor_history_bonus:
+  heavy: 15 # >=25 H-1B records: reliably sponsors
+  yes: 10 # 3-24 records: routine sponsor
+  low: 4 # 1-2 records: has sponsored, but not the norm
+  unknown: 0 # H-1B data not imported yet
+  none: -5 # no records found. Only a small penalty — legal entity names very often
+  #        don't match brand names, and a false "doesn't sponsor" costs more than
+  #        a miss, so judge leniently
+
+# ── Project story routing ────────────────────────────────
+# The shortlist uses JD keyword hits to suggest which story to lead with for each company.
+# Story names must match the keys in the stories section of answers.yaml —
+# the board joins them by name.
+stories:
+  - name: "Streaming pipeline"
+    pitch: "Migrated a 24h batch process to event-driven near-real-time (Pub/Sub + partitioned BigQuery + idempotent ingestion)"
+    triggers: [pub/sub, pubsub, streaming, real-time, kafka, event-driven, bigquery, gcp, idempoten, schema, airflow, etl, elt]
+  - name: "Feature pipelines"
+    pitch: "Daily feature-generation pipelines feeding a recommendation system at large scale"
+    triggers: [feature store, feature engineering, ranking, recommendation, ads, advertising, ctr, experimentation, a/b]
+
+# ── Company bar (is it within reach?) ────────────────────
+# Companies marked bar: high in companies.yaml (top quant shops / frontier AI labs /
+# top-bar infra): cold applications from a junior candidate needing sponsorship
+# convert at near zero there. Not rejected (referrals are a different story),
+# but scored down to make room for reachable roles. bar: low is reserved for
+# companies with visibly less competition.
+bar_adjust:
+  high: -12
+  low: 6
+
+# ── Golden postings (entry criteria for the board's "golden" page) ──────
+# Definition: fresh (truly posted <=48h, the free early-application leverage still
+# applies) x score high enough x required years within reach x sponsor track record
+# x not a high-bar shop. This small set is what deserves daily attention.
+golden:
+  max_age_days: 2
+  second_window_days: 4   # catch-up lane: 48-96h (covers weekends / a two-day gap)
+  min_score: 60
+  max_req_yoe: 2     # golden rule: only <=2 years required (no stated requirement also passes)
+  # Compromise: 3-year roles don't make the TOP lane by default, but an exceptional
+  # score overrides — a 100-point pure-DE role shouldn't be filtered away;
+  # the catch-up lane is uniformly relaxed to <=3
+  stretch_yoe: 3
+  stretch_min_score: 80   # score floor for a 3-year role to break into the TOP lane
+  exclude_senior_title: true   # senior/sr titles never go golden — honestly low odds, don't take a slot
+  sponsor: [heavy, yes, positive, low]   # low passes too: low counts from entity-name mismatches are common
+  exclude_bar: [high]
+  title_tiers: [strong, good]   # core directions only; generic SWE riding a freshness bonus is not golden
+
+# ── LLM fine-screening (jpipe/enrich.py, second pass after fetch) ──────
+# The long tail regexes can't handle ("8+ years across...") goes through a
+# lightweight model. Needs ANTHROPIC_API_KEY; if unset it is skipped
+# automatically and the rest of the pipeline is unaffected.
+llm:
+  enabled: true
+  backend: auto             # auto = use the API when a key is set, otherwise cc (Claude Code subscription quota, zero marginal cost)
+  model: claude-haiku-4-5   # used by the api backend; the cc backend is pinned to --model haiku
+  max_per_run: 200          # per-run call ceiling (cost/quota guardrail)
+
+# ── Freshness ────────────────────────────────────────────
+# Applying early gets you seen first — the only free leverage in cold applications.
+# But posted_at is the true publish date; ats_updated only means the recruiter
+# edited the posting once, so it must carry much less weight
+# (see the comments in sources/greenhouse.py).
+freshness:
+  posted_bonus: # by true publish date, days -> points
+    1: 22 # within 24h
+    3: 14
+    7: 7
+    14: 3
+  updated_bonus: # granted only when posted_at is already old but the posting was recently edited
+    3: 5
+    7: 2
+  fresh_window_days: 1 # definition of "fresh": posted within 24h
+  fresh_reserved: 5 # minimum slots per shortlist reserved for sub-24h postings
+  fresh_lane_min_score: 55 # the reserved lane still has a floor — don't apply to generic SWE just because it's new
+
+# ── Thresholds ───────────────────────────────────────────
+thresholds:
+  archive_days: 30 # auto-archive postings older than this (almost certainly no longer collecting resumes); keeps the DB rolling
+  shortlist_min_score: 45 # below this score a posting never makes the daily shortlist
+  daily_shortlist_size: 8 # how many to generate per day — a few more than you plan to send leaves room to skip
+  stale_days: 45 # a posting untouched for this long is considered expired
+  ghost_days: 21 # an application silent for this long counts as ghosted
+  concurrent_per_company: 3 # max simultaneous processes per company; beyond this its postings stop surfacing

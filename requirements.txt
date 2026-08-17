@@ -1,0 +1,9 @@
+requests>=2.31
+PyYAML>=6.0
+Flask>=2.2
+
+# Optional extras:
+#   pip install anthropic   # LLM enrichment via the Anthropic API
+#                           # (or install Claude Code and use the `cc` backend instead)
+#   pip install pypdf       # `python jobpipe.py import-resume <resume.pdf>`
+#   pip install openpyxl    # `sponsor-ingest` with .xlsx H-1B disclosure files

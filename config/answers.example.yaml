@@ -1,0 +1,86 @@
+# Application answer sheet — the data source for the board's Apply page.
+# Standard screening questions are one-click copy; why-this-role drafts are
+# assembled from the stories below based on JD keyword hits.
+# Fill in every placeholder with your own details; changes take effect on
+# board refresh, no restart needed.
+
+# ── Basic identity fields (used by form-filling automations, if you build any) ──
+identity:
+  first_name: "Jane"
+  last_name: "Doe"
+  preferred_name: ""
+  email: "jane.doe@example.com"
+  phone: "(555) 555-0100"
+  location: "New York, NY"
+  address: ""          # some Workday forms require a street address
+  linkedin: "https://www.linkedin.com/in/your-handle"
+  website: ""
+  resume: ""           # path to your resume PDF, used by form-filling automations if you build any
+  work_auth: "F-1 OPT (STEM extension eligible)"
+  visa_sponsorship_needed: true   # always answer truthfully
+  education:
+    - school: "Example University"
+      degree: "M.S. in Computer Science"
+      dates: "Sep 2023 - Dec 2024"
+  current_employer: "Acme Corp"
+  current_title: "Data Engineer"
+  current_dates: "Jun 2024 - Present"
+
+# ── Standard screening questions (the ones autofill can't answer) ─────────
+standard:
+  - q: "Are you legally authorized to work in the U.S.?"
+    a: "Yes. I am currently authorized to work in the U.S. under F-1 OPT (STEM extension eligible)."
+  - q: "Will you now or in the future require sponsorship?"
+    a: "Yes, I will require H-1B sponsorship in the future."
+    note: "Never answer this untruthfully — a false answer is a misrepresentation that surfaces in background checks."
+  - q: "When can you start? / Notice period"
+    a: "I can start within 2–3 weeks of accepting an offer."
+  - q: "Salary expectation"
+    a: "My expectation is in the range of $XXk–$YYk base, and I'm open to discussing the full package."
+    note: "Adjust per city/level; skip when optional; give a range, never a single number."
+  - q: "Where are you located? / Are you willing to relocate?"
+    a: "I'm based in New York City and open to relocation for the right opportunity."
+  - q: "LinkedIn"
+    a: "https://www.linkedin.com/in/your-handle"
+  - q: "How did you hear about this role?"
+    a: "Company careers page"
+  - q: "Preferred name / Pronouns"
+    a: "Jane Doe"
+
+# ── Why-this-role material (first person, ready to paste into a cover note) ──
+# opener: one domain-matched opening sentence; the story paragraph is chosen
+# automatically by the story routing in profile.yaml.
+openers:
+  data_infra: "I've spent the last two years building data pipelines that other teams depend on daily, and I want to do that at a company where the data platform is the product itself."
+  healthcare: "In my current role I work with data where correctness directly affects people, so I know firsthand how much engineering rigor healthcare data demands."
+  ads: "I've built feature pipelines that feed a large-scale recommendation system, which is exactly the problem space this role describes."
+  fintech: "Working with transactional data taught me that correctness and idempotency aren't nice-to-haves; in financial data they're the job."
+  consumer: "I'm drawn to consumer-scale data problems, where every pipeline design decision is magnified by the size of the audience."
+  default: "This role sits exactly at the intersection of what I do today and where I want to go deeper: production data pipelines with real reliability ownership."
+
+# Story keys must match the story names in profile.yaml — the board joins them by name.
+stories:
+  "Streaming pipeline": >-
+    In my current role I migrated a 24-hour batch process to an event-driven,
+    near-real-time pipeline built on Pub/Sub and partitioned BigQuery tables,
+    with idempotent ingestion so replays and retries are safe. I own that
+    system end to end in production.
+  "Feature pipelines": >-
+    I have also built daily feature-generation pipelines feeding a
+    recommendation system at large scale, covering tens of millions of users.
+    That work taught me how to keep wide, frequently changing feature sets
+    correct, fresh, and cheap to recompute.
+
+closer: "I'd love to bring that combination of pipeline craftsmanship and reliability mindset to your team."
+
+# Company name -> opener routing (a hit uses the mapped opener; otherwise the
+# opener is guessed from JD keywords, falling back to default). Extend freely.
+company_openers:
+  Flatiron Health: healthcare
+  Oscar Health: healthcare
+  The Trade Desk: ads
+  Moloco: ads
+  Netflix: consumer
+  DoorDash: consumer
+  Confluent: data_infra
+  Ramp: fintech

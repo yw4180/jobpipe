@@ -1,0 +1,424 @@
+# Target company list
+#
+# Every ats/token below has been verified live with `python jobpipe.py verify`.
+# Job boards change and tokens go stale — re-run verify every week or two and
+# delete or fix any entry that fails.
+#
+# Fields:
+#   ats:     greenhouse | lever | ashby | workday
+#            | amazon | meta | apple | microsoft (first-party career sites) | eightfold (Netflix etc.)
+#   token:   job-board identifier (first-party adapters ignore it; any placeholder works)
+#   site:    workday format "{tenant}/{wdN}/{SiteName}"; eightfold format "{host}/{domain}"
+#   bar:     high = high-bar shops where cold applications rarely convert (scored -12, excluded from the golden page)
+#   sponsor: heavy | yes | unknown | none  <- seed guess; overwritten by real H-1B data once sponsor-ingest has run
+#   tier:    1=priority 2=regular 3=backup (for your own reference only, not used in scoring)
+
+companies:
+  # ── Data infrastructure / data platform ───────────────
+  - { name: Databricks,        ats: greenhouse, token: databricks,        sponsor: heavy,   tier: 1, bar: high }
+  - { name: Confluent,         ats: ashby,      token: confluent,         sponsor: heavy,   tier: 1 }
+  - { name: Snowflake,         ats: ashby,      token: snowflake,         sponsor: heavy,   tier: 1, bar: high }
+  - { name: MongoDB,           ats: greenhouse, token: mongodb,           sponsor: heavy,   tier: 1 }
+  - { name: Elastic,           ats: greenhouse, token: elastic,           sponsor: "yes", aliases: ["Elasticsearch Inc"],     tier: 2 }
+  - { name: Cockroach Labs,    ats: greenhouse, token: cockroachlabs,     sponsor: "yes",     tier: 1 }
+  - { name: ClickHouse,        ats: ashby,      token: clickhouse,        sponsor: "yes",     tier: 1 }
+  - { name: Fivetran,          ats: greenhouse, token: fivetran,          sponsor: "yes",     tier: 1 }
+  - { name: Sigma Computing,   ats: greenhouse, token: sigmacomputing,    sponsor: unknown, tier: 2 }
+  - { name: Starburst,         ats: greenhouse, token: starburst,         sponsor: unknown, tier: 2 }
+  - { name: Monte Carlo,       ats: ashby,      token: montecarlodata,    sponsor: unknown, tier: 2 }
+  - { name: Materialize,       ats: ashby,      token: materialize,       sponsor: unknown, tier: 3 }
+  - { name: Temporal,          ats: greenhouse, token: temporaltechnologies, sponsor: unknown, tier: 3 }
+
+  # ── AI / ML platform ──────────────────────────────────
+  - { name: Anthropic,         ats: greenhouse, token: anthropic,         sponsor: heavy,   tier: 1, bar: high }
+  - { name: OpenAI,            ats: ashby,      token: openai,            sponsor: heavy,   tier: 1, bar: high }
+  - { name: Scale AI,          ats: greenhouse, token: scaleai,           sponsor: "yes", aliases: ["Scale AI Inc"],     tier: 1 }
+  - { name: Perplexity AI,     ats: ashby,      token: perplexity,        sponsor: unknown, tier: 2 }
+  - { name: Runway,            ats: ashby,      token: runway,            sponsor: unknown, tier: 2 }
+
+  # ── Fintech (dense in NYC) ────────────────────────────
+  - { name: Ramp,              ats: ashby,      token: ramp,              sponsor: "yes", aliases: ["Ramp Business Corporation"],     tier: 1 }
+  - { name: Stripe,            ats: greenhouse, token: stripe,            sponsor: heavy,   tier: 1, bar: high }
+  - { name: Plaid,             ats: ashby,      token: plaid,             sponsor: "yes",     tier: 1 }
+  - { name: Brex,              ats: greenhouse, token: brex,              sponsor: "yes",     tier: 1 }
+  - { name: Affirm,            ats: greenhouse, token: affirm,            sponsor: heavy,   tier: 1 }
+  - { name: Robinhood,         ats: greenhouse, token: robinhood,         sponsor: heavy,   tier: 1 }
+  - { name: Coinbase,          ats: greenhouse, token: coinbase,          sponsor: heavy,   tier: 1 }
+  - { name: Chime,             ats: greenhouse, token: chime,             sponsor: "yes",     tier: 2 }
+  - { name: SoFi,              ats: greenhouse, token: sofi,              sponsor: "yes", aliases: ["Social Finance Inc"],     tier: 2 }
+  - { name: Betterment,        ats: greenhouse, token: betterment,        sponsor: unknown, tier: 2 }
+  - { name: Marqeta,           ats: greenhouse, token: marqeta,           sponsor: unknown, tier: 3 }
+  - { name: Current,           ats: greenhouse, token: current,           sponsor: unknown, tier: 3 }
+
+  # ── Quant / trading (NYC; strong H-1B records, high bar) ──
+  - { name: Jane Street,       ats: greenhouse, token: janestreet,        sponsor: heavy,   tier: 2, bar: high }
+  - { name: Hudson River Trading, ats: greenhouse, token: wehrtyou,       sponsor: heavy, aliases: ["Hudson River Trading LLC"],   tier: 2, bar: high }
+  - { name: Point72,           ats: greenhouse, token: point72,           sponsor: heavy, aliases: ["Point72 Asset Management"],   tier: 1, bar: high }
+  - { name: DRW,               ats: greenhouse, token: drweng,            sponsor: heavy,   tier: 2, bar: high }
+  - { name: IMC Trading,       ats: greenhouse, token: imc,               sponsor: "yes", aliases: ["IMC Americas Inc"],     tier: 3, bar: high }
+  - { name: Squarepoint,       ats: greenhouse, token: squarepointcapital, sponsor: "yes",    tier: 2, bar: high }
+
+  # ── Consumer / platform (high data volume, many DE roles) ──
+  - { name: DoorDash,          ats: greenhouse, token: doordashusa,       sponsor: heavy,   tier: 1 }
+  - { name: Instacart,         ats: greenhouse, token: instacart,         sponsor: heavy, aliases: ["Maplebear Inc"],   tier: 1 }
+  - { name: Lyft,              ats: greenhouse, token: lyft,              sponsor: heavy,   tier: 1 }
+  - { name: Reddit,            ats: greenhouse, token: reddit,            sponsor: heavy,   tier: 1 }
+  - { name: Pinterest,         ats: greenhouse, token: pinterest,         sponsor: heavy,   tier: 1 }
+  - { name: Peloton,           ats: greenhouse, token: peloton,           sponsor: "yes",     tier: 2 }
+  - { name: Squarespace,       ats: greenhouse, token: squarespace,       sponsor: "yes",     tier: 1 }
+  - { name: Spotify,           ats: lever,      token: spotify,           sponsor: heavy,   tier: 1 }
+  - { name: Duolingo,          ats: greenhouse, token: duolingo,          sponsor: "yes",     tier: 2 }
+  - { name: Discord,           ats: greenhouse, token: discord,           sponsor: "yes",     tier: 2 }
+  - { name: Roblox,            ats: greenhouse, token: roblox,            sponsor: heavy,   tier: 2 }
+
+  # ── SaaS / developer tools ────────────────────────────
+  - { name: Datadog,           ats: greenhouse, token: datadog,           sponsor: heavy,   tier: 1 }
+  - { name: Cloudflare,        ats: greenhouse, token: cloudflare,        sponsor: heavy,   tier: 1 }
+  - { name: Twilio,            ats: greenhouse, token: twilio,            sponsor: "yes",     tier: 2 }
+  - { name: GitLab,            ats: greenhouse, token: gitlab,            sponsor: "yes",     tier: 2 }
+  - { name: Figma,             ats: greenhouse, token: figma,             sponsor: heavy,   tier: 1, bar: high }
+  - { name: Notion,            ats: ashby,      token: notion,            sponsor: "yes",     tier: 1 }
+  - { name: Airtable,          ats: greenhouse, token: airtable,          sponsor: "yes", aliases: ["Formagrid Inc"],     tier: 2 }
+  - { name: Asana,             ats: greenhouse, token: asana,             sponsor: heavy,   tier: 2 }
+  - { name: Sentry,            ats: ashby,      token: sentry,            sponsor: unknown, tier: 3 }
+  - { name: Linear,            ats: ashby,      token: linear,            sponsor: unknown, tier: 3 }
+  - { name: Amplitude,         ats: greenhouse, token: amplitude,         sponsor: "yes",     tier: 2 }
+  - { name: Braze,             ats: greenhouse, token: braze,             sponsor: "yes",     tier: 1 }
+  - { name: 1Password,         ats: ashby,      token: 1password,         sponsor: unknown, aliases: ["AgileBits USA Inc"], tier: 3 }
+
+  # ── Healthcare / biotech ──────────────────────────────
+  - { name: Flatiron Health,   ats: greenhouse, token: flatironhealth,    sponsor: heavy,   tier: 1 }
+  - { name: Komodo Health,     ats: greenhouse, token: komodohealth,      sponsor: "yes",     tier: 1 }
+  - { name: Benchling,         ats: ashby,      token: benchling,         sponsor: "yes",     tier: 1 }
+  - { name: Oscar Health,      ats: greenhouse, token: oscar,             sponsor: heavy, aliases: ["Mulberry Technology Inc", "Mulberry Health Inc"],   tier: 1 }
+  - { name: Cedar,             ats: ashby,      token: cedar,             sponsor: unknown, tier: 2 }
+  - { name: Hinge Health,      ats: ashby,      token: hinge-health,      sponsor: "yes",     tier: 2 }
+  - { name: Headway,           ats: ashby,      token: headway,           sponsor: unknown, tier: 2 }
+  - { name: Ro,                ats: lever,      token: ro,                sponsor: "yes", aliases: ["Roman Health Ventures Inc"],     tier: 2 }
+  - { name: Recursion,         ats: greenhouse, token: recursionpharmaceuticals, sponsor: "yes", tier: 2 }
+  - { name: Insitro,           ats: ashby,      token: insitro,           sponsor: "yes",     tier: 3 }
+
+  # ── Ads / recommendations ─────────────────────────────
+  - { name: The Trade Desk,    ats: greenhouse, token: thetradedesk,      sponsor: heavy, aliases: ["Trade Desk Inc"],   tier: 1 }
+  - { name: AppLovin,          ats: greenhouse, token: applovin,          sponsor: "yes",     tier: 1 }
+  - { name: DoubleVerify,      ats: greenhouse, token: doubleverify,      sponsor: "yes",     tier: 1 }
+  - { name: Klaviyo,           ats: greenhouse, token: klaviyo,           sponsor: "yes",     tier: 2 }
+
+  # ── Workday (experimental; more fragile than the other sources) ──
+  - { name: Nvidia,      ats: workday, token: nvidia,     site: "nvidia/wd5/NVIDIAExternalCareerSite", sponsor: heavy, tier: 1 }
+  - { name: Salesforce,  ats: workday, token: salesforce, site: "salesforce/wd12/External_Career_Site", sponsor: heavy, tier: 3 }
+
+  # ══ Bulk-discovery additions (513 candidates probed -> 297 valid boards -> 234 new after dedup) ══
+  # The sponsor field here is determined directly from the USCIS H-1B dataset, not guessed.
+  - { name: Abnormal Security, ats: greenhouse, token: abnormalsecurity, sponsor: "yes", tier: 2 }
+  - { name: Abridge, ats: ashby, token: abridge, sponsor: "yes", tier: 2 }
+  - { name: Airbnb, ats: greenhouse, token: airbnb, sponsor: "yes", tier: 2, bar: high }
+  - { name: Airbyte, ats: ashby, token: airbyte, sponsor: low, tier: 2 }
+  - { name: Airwallex, ats: ashby, token: airwallex, sponsor: low, tier: 2 }
+  - { name: Akuna Capital, ats: greenhouse, token: akunacapital, sponsor: "yes", tier: 2, bar: high }
+  - { name: Alchemy, ats: ashby, token: alchemy, sponsor: low, tier: 2 }
+  - { name: Aledade, ats: lever, token: aledade, sponsor: none, tier: 2 }
+  - { name: Alloy, ats: greenhouse, token: alloy, sponsor: low, tier: 2 }
+  - { name: Anchorage Digital, ats: lever, token: anchorage, sponsor: none, tier: 2 }
+  - { name: AngelList, ats: lever, token: angellist, sponsor: none, tier: 2 }
+  - { name: Angi, ats: ashby, token: angi, sponsor: low, tier: 2 }
+  - { name: Anyscale, ats: ashby, token: anyscale, sponsor: "yes", tier: 2 }
+  - { name: AQR, ats: greenhouse, token: aqr, sponsor: none, tier: 2, bar: high }
+  - { name: Arcadia, ats: lever, token: arcadia, sponsor: low, tier: 2 }
+  - { name: Astranis, ats: greenhouse, token: astranis, sponsor: none, tier: 2 }
+  - { name: Astronomer, ats: ashby, token: astronomer, sponsor: low, tier: 2 }
+  - { name: Atlan, ats: ashby, token: atlan, sponsor: low, tier: 2 }
+  - { name: Attentive, ats: greenhouse, token: attentive, sponsor: low, tier: 2 }
+  - { name: Away, ats: ashby, token: away, sponsor: none, tier: 2 }
+  - { name: Baseten, ats: ashby, token: baseten, sponsor: low, tier: 2 }
+  - { name: Belvedere Trading, ats: lever, token: belvederetrading, sponsor: none, tier: 2, bar: high }
+  - { name: Braintrust, ats: ashby, token: braintrust, sponsor: none, tier: 2 }
+  - { name: Buildkite, ats: greenhouse, token: buildkite, sponsor: none, tier: 2 }
+  - { name: Calendly, ats: greenhouse, token: calendly, sponsor: none, tier: 2 }
+  - { name: Carta, ats: greenhouse, token: carta, sponsor: low, tier: 2 }
+  - { name: Celonis, ats: greenhouse, token: celonis, sponsor: low, tier: 2 }
+  - { name: Chainguard, ats: greenhouse, token: chainguard, sponsor: low, tier: 2 }
+  - { name: Character AI, ats: ashby, token: character, sponsor: none, tier: 2, bar: high }
+  - { name: ChowNow, ats: lever, token: chownow, sponsor: low, tier: 2 }
+  - { name: CircleCI, ats: greenhouse, token: circleci, sponsor: none, tier: 2 }
+  - { name: ClickUp, ats: ashby, token: clickup, sponsor: none, tier: 2 }
+  - { name: Clover Health, ats: greenhouse, token: cloverhealth, sponsor: low, tier: 2 }
+  - { name: Coalition, ats: greenhouse, token: coalition, sponsor: "yes", tier: 2 }
+  - { name: Cohere, ats: ashby, token: cohere, sponsor: low, tier: 2 }
+  - { name: Collibra, ats: greenhouse, token: collibra, sponsor: low, tier: 2 }
+  - { name: Column, ats: ashby, token: column, sponsor: low, tier: 2 }
+  - { name: Comet, ats: greenhouse, token: comet, sponsor: low, tier: 2 }
+  - { name: Commure, ats: ashby, token: commure, sponsor: low, tier: 2 }
+  - { name: Coursera, ats: greenhouse, token: coursera, sponsor: "yes", tier: 2 }
+  - { name: Cresta, ats: greenhouse, token: cresta, sponsor: low, tier: 2 }
+  - { name: Cribl, ats: greenhouse, token: cribl, sponsor: low, tier: 2 }
+  - { name: Cursor, ats: ashby, token: cursor, sponsor: none, tier: 2, bar: high }
+  - { name: Dataiku, ats: greenhouse, token: dataiku, sponsor: low, tier: 2 }
+  - { name: Divergent, ats: greenhouse, token: divergent, sponsor: "yes", tier: 2 }
+  - { name: Domino Data Lab, ats: greenhouse, token: dominodatalab, sponsor: "yes", tier: 2 }
+  - { name: Doppler, ats: ashby, token: doppler, sponsor: none, tier: 2 }
+  - { name: Doximity, ats: greenhouse, token: doximity, sponsor: "yes", tier: 2 }
+  - { name: Drata, ats: ashby, token: drata, sponsor: none, tier: 2 }
+  - { name: Dremio, ats: greenhouse, token: dremio, sponsor: "yes", tier: 2 }
+  - { name: Dropbox, ats: greenhouse, token: dropbox, sponsor: "yes", tier: 2 }
+  - { name: ElevenLabs, ats: ashby, token: elevenlabs, sponsor: none, tier: 2 }
+  - { name: EliseAI, ats: ashby, token: eliseai, sponsor: none, tier: 2 }
+  - { name: Encord, ats: ashby, token: encord, sponsor: none, tier: 2 }
+  - { name: Everlaw, ats: greenhouse, token: everlaw, sponsor: low, tier: 2 }
+  - { name: Faire, ats: greenhouse, token: faire, sponsor: "yes", tier: 2 }
+  - { name: Fastly, ats: greenhouse, token: fastly, sponsor: low, tier: 2 }
+  - { name: Feedzai, ats: greenhouse, token: feedzai, sponsor: low, tier: 2 }
+  - { name: Fireblocks, ats: greenhouse, token: fireblocks, sponsor: low, tier: 2 }
+  - { name: Fireworks AI, ats: ashby, token: fireworks, sponsor: none, tier: 2 }
+  - { name: Flexport, ats: greenhouse, token: flexport, sponsor: "yes", tier: 2 }
+  - { name: Forter, ats: greenhouse, token: forter, sponsor: none, tier: 2 }
+  - { name: FourKites, ats: greenhouse, token: fourkites, sponsor: low, tier: 2 }
+  - { name: Freenome, ats: greenhouse, token: freenome, sponsor: "yes", tier: 2 }
+  - { name: Galileo, ats: greenhouse, token: galileo, sponsor: low, tier: 2 }
+  - { name: Garner Health, ats: greenhouse, token: garnerhealth, sponsor: none, tier: 2 }
+  - { name: Gemini, ats: greenhouse, token: gemini, sponsor: "yes", tier: 2 }
+  - { name: GoodData, ats: ashby, token: gooddata, sponsor: none, tier: 2 }
+  - { name: Grafana Labs, ats: greenhouse, token: grafanalabs, sponsor: none, tier: 2 }
+  - { name: Gusto, ats: greenhouse, token: gusto, sponsor: "yes", tier: 2 }
+  - { name: Harvey, ats: ashby, token: harvey, sponsor: heavy, tier: 2 }
+  - { name: HealthVerity, ats: greenhouse, token: healthverity, sponsor: none, tier: 2 }
+  - { name: HelloFresh, ats: greenhouse, token: hellofresh, sponsor: none, tier: 2 }
+  - { name: Hex, ats: ashby, token: hex, sponsor: low, tier: 2 }
+  - { name: Hightouch, ats: greenhouse, token: hightouch, sponsor: none, tier: 2 }
+  - { name: Honeycomb, ats: greenhouse, token: honeycomb, sponsor: low, tier: 2 }
+  - { name: Hyperscience, ats: ashby, token: hyperscience, sponsor: none, tier: 2 }
+  - { name: Ideogram, ats: ashby, token: ideogram, sponsor: none, tier: 2 }
+  - { name: IMC, ats: greenhouse, token: imc, sponsor: none, tier: 2, bar: high }
+  - { name: Imply, ats: greenhouse, token: imply, sponsor: low, tier: 2 }
+  - { name: Included Health, ats: lever, token: includedhealth, sponsor: low, tier: 2 }
+  - { name: Infisical, ats: ashby, token: infisical, sponsor: none, tier: 2 }
+  - { name: Inngest, ats: ashby, token: inngest, sponsor: none, tier: 2 }
+  - { name: Innovid, ats: greenhouse, token: innovid, sponsor: low, tier: 2 }
+  - { name: Instabase, ats: greenhouse, token: instabase, sponsor: "yes", tier: 2 }
+  - { name: Intercom, ats: greenhouse, token: intercom, sponsor: low, tier: 2 }
+  - { name: Iterable, ats: ashby, token: iterable, sponsor: low, tier: 2 }
+  - { name: Jobber, ats: ashby, token: jobber, sponsor: none, tier: 2 }
+  - { name: Jump Trading, ats: greenhouse, token: jumptrading, sponsor: none, tier: 2, bar: high }
+  - { name: Justworks, ats: greenhouse, token: justworks, sponsor: "yes", tier: 2 }
+  - { name: Kong, ats: ashby, token: kong, sponsor: low, tier: 2 }
+  - { name: Labelbox, ats: greenhouse, token: labelbox, sponsor: low, tier: 2 }
+  - { name: LangChain, ats: ashby, token: langchain, sponsor: none, tier: 2 }
+  - { name: Latch, ats: lever, token: latch, sponsor: low, tier: 2 }
+  - { name: LaunchDarkly, ats: greenhouse, token: launchdarkly, sponsor: low, tier: 2 }
+  - { name: Lemonade, ats: ashby, token: lemonade, sponsor: low, tier: 2 }
+  - { name: Liftoff, ats: greenhouse, token: liftoff, sponsor: "yes", tier: 2 }
+  - { name: Lithic, ats: greenhouse, token: lithic, sponsor: none, tier: 2 }
+  - { name: Lucid Motors, ats: greenhouse, token: lucidmotors, sponsor: none, tier: 2 }
+  - { name: Lucid Software, ats: greenhouse, token: lucidsoftware, sponsor: "yes", tier: 2 }
+  - { name: Luma AI, ats: ashby, token: lumaai, sponsor: none, tier: 2 }
+  - { name: Lyra Health, ats: lever, token: lyrahealth, sponsor: low, tier: 2 }
+  - { name: Match Group, ats: lever, token: matchgroup, sponsor: "yes", tier: 2 }
+  - { name: Matillion, ats: lever, token: matillion, sponsor: none, tier: 2 }
+  - { name: Melio, ats: greenhouse, token: melio, sponsor: low, tier: 2 }
+  - { name: Mercury, ats: greenhouse, token: mercury, sponsor: low, tier: 2 }
+  - { name: Middesk, ats: ashby, token: middesk, sponsor: low, tier: 2 }
+  - { name: MinIO, ats: greenhouse, token: minio, sponsor: low, tier: 2 }
+  - { name: Mintlify, ats: ashby, token: mintlify, sponsor: none, tier: 2 }
+  - { name: Miro, ats: ashby, token: miro, sponsor: none, tier: 2 }
+  - { name: Misfits Market, ats: greenhouse, token: misfitsmarket, sponsor: low, tier: 2 }
+  - { name: Mixpanel, ats: greenhouse, token: mixpanel, sponsor: "yes", tier: 2 }
+  - { name: Modal, ats: ashby, token: modal, sponsor: none, tier: 2 }
+  - { name: Modern Treasury, ats: ashby, token: moderntreasury, sponsor: low, tier: 2 }
+  - { name: Moloco, ats: greenhouse, token: moloco, sponsor: "yes", tier: 2 }
+  - { name: MotherDuck, ats: ashby, token: motherduck, sponsor: low, tier: 2 }
+  - { name: Motive, ats: greenhouse, token: motive, sponsor: low, tier: 2 }
+  - { name: Movable Ink, ats: greenhouse, token: movableink, sponsor: none, tier: 2 }
+  - { name: Nabla, ats: ashby, token: nabla, sponsor: none, tier: 2 }
+  - { name: Neon, ats: lever, token: neon, sponsor: none, tier: 2 }
+  - { name: Netlify, ats: greenhouse, token: netlify, sponsor: low, tier: 2 }
+  - { name: New Relic, ats: greenhouse, token: newrelic, sponsor: low, tier: 2 }
+  - { name: Nextdoor, ats: greenhouse, token: nextdoor, sponsor: "yes", tier: 2 }
+  - { name: Notable, ats: ashby, token: notable, sponsor: none, tier: 2 }
+  - { name: Nuro, ats: greenhouse, token: nuro, sponsor: heavy, tier: 2 }
+  - { name: Okta, ats: greenhouse, token: okta, sponsor: "yes", tier: 2 }
+  - { name: Old Mission Capital, ats: greenhouse, token: oldmissioncapital, sponsor: low, tier: 2, bar: high }
+  - { name: Olo, ats: lever, token: olo, sponsor: none, tier: 2 }
+  - { name: Omada Health, ats: greenhouse, token: omadahealth, sponsor: low, tier: 2 }
+  - { name: Omni, ats: ashby, token: omni, sponsor: none, tier: 2 }
+  - { name: One Medical, ats: greenhouse, token: onemedical, sponsor: low, tier: 2 }
+  - { name: OpenEvidence, ats: ashby, token: openevidence, sponsor: none, tier: 2 }
+  - { name: Openly, ats: ashby, token: openly, sponsor: low, tier: 2 }
+  - { name: OpenX, ats: lever, token: openx, sponsor: none, tier: 2 }
+  - { name: Orca Security, ats: greenhouse, token: orcasecurity, sponsor: none, tier: 2 }
+  - { name: Oura, ats: greenhouse, token: oura, sponsor: none, tier: 2 }
+  - { name: Pacaso, ats: greenhouse, token: pacaso, sponsor: low, tier: 2 }
+  - { name: Patreon, ats: ashby, token: patreon, sponsor: low, tier: 2 }
+  - { name: Paxos, ats: ashby, token: paxos, sponsor: "yes", tier: 2 }
+  - { name: Perplexity, ats: ashby, token: perplexity, sponsor: none, tier: 2 }
+  - { name: Persona, ats: ashby, token: persona, sponsor: low, tier: 2 }
+  - { name: Pie Insurance, ats: greenhouse, token: pieinsurance, sponsor: low, tier: 2 }
+  - { name: Pinecone, ats: ashby, token: pinecone, sponsor: none, tier: 2 }
+  - { name: Planet Labs, ats: greenhouse, token: planetlabs, sponsor: "yes", tier: 2 }
+  - { name: PlanetScale, ats: greenhouse, token: planetscale, sponsor: none, tier: 2 }
+  - { name: Poshmark, ats: ashby, token: poshmark, sponsor: low, tier: 2 }
+  - { name: Postman, ats: greenhouse, token: postman, sponsor: low, tier: 2 }
+  - { name: Postscript, ats: greenhouse, token: postscript, sponsor: none, tier: 2 }
+  - { name: Prefect, ats: ashby, token: prefect, sponsor: none, tier: 2 }
+  - { name: project44, ats: greenhouse, token: project44, sponsor: low, tier: 2 }
+  - { name: Public, ats: greenhouse, token: public, sponsor: "yes", tier: 2 }
+  - { name: PubMatic, ats: greenhouse, token: pubmatic, sponsor: "yes", tier: 2 }
+  - { name: Railway, ats: ashby, token: railway, sponsor: none, tier: 2 }
+  - { name: Relativity, ats: greenhouse, token: relativity, sponsor: "yes", tier: 2 }
+  - { name: Relativity Space, ats: greenhouse, token: relativity, sponsor: none, tier: 2 }
+  - { name: Render, ats: ashby, token: render, sponsor: low, tier: 2 }
+  - { name: Rent the Runway, ats: greenhouse, token: renttherunway, sponsor: low, tier: 2 }
+  - { name: Replit, ats: ashby, token: replit, sponsor: low, tier: 2 }
+  - { name: Riskified, ats: greenhouse, token: riskified, sponsor: low, tier: 2 }
+  - { name: Roboflow, ats: ashby, token: roboflow, sponsor: none, tier: 2 }
+  - { name: Rocket Lab, ats: greenhouse, token: rocketlab, sponsor: "yes", tier: 2 }
+  - { name: Roofstock, ats: greenhouse, token: roofstock, sponsor: low, tier: 2 }
+  - { name: Samba TV, ats: lever, token: sambatv, sponsor: low, tier: 2 }
+  - { name: Samsara, ats: greenhouse, token: samsara, sponsor: "yes", tier: 2 }
+  - { name: Sardine, ats: ashby, token: sardine, sponsor: none, tier: 2 }
+  - { name: Secureframe, ats: ashby, token: secureframe, sponsor: none, tier: 2 }
+  - { name: Semgrep, ats: ashby, token: semgrep, sponsor: none, tier: 2 }
+  - { name: Shield AI, ats: lever, token: shieldai, sponsor: low, tier: 2 }
+  - { name: Sierra, ats: ashby, token: sierra, sponsor: "yes", tier: 2, bar: high }
+  - { name: Sift, ats: ashby, token: sift, sponsor: none, tier: 2 }
+  - { name: SingleStore, ats: greenhouse, token: singlestore, sponsor: low, tier: 2 }
+  - { name: Sisense, ats: greenhouse, token: sisense, sponsor: low, tier: 2 }
+  - { name: Skydio, ats: ashby, token: skydio, sponsor: low, tier: 2 }
+  - { name: Slice, ats: greenhouse, token: slice, sponsor: none, tier: 2 }
+  - { name: SmartRent, ats: greenhouse, token: smartrent, sponsor: low, tier: 2 }
+  - { name: Smartsheet, ats: greenhouse, token: smartsheet, sponsor: "yes", tier: 2 }
+  - { name: SnapLogic, ats: lever, token: snaplogic, sponsor: "yes", tier: 2 }
+  - { name: Snorkel AI, ats: greenhouse, token: snorkelai, sponsor: low, tier: 2 }
+  - { name: Socket, ats: ashby, token: socket, sponsor: none, tier: 2 }
+  - { name: Socure, ats: ashby, token: socure, sponsor: low, tier: 2 }
+  - { name: Sovrn, ats: greenhouse, token: sovrn, sponsor: low, tier: 2 }
+  - { name: StackBlitz, ats: greenhouse, token: stackblitz, sponsor: none, tier: 2 }
+  - { name: Stitch Fix, ats: greenhouse, token: stitchfix, sponsor: "yes", tier: 2 }
+  - { name: StockX, ats: greenhouse, token: stockx, sponsor: "yes", tier: 2 }
+  - { name: Strava, ats: ashby, token: strava, sponsor: low, tier: 2 }
+  - { name: Stytch, ats: ashby, token: stytch, sponsor: low, tier: 2 }
+  - { name: Substack, ats: ashby, token: substack, sponsor: low, tier: 2 }
+  - { name: Sumo Logic, ats: greenhouse, token: sumologic, sponsor: "yes", tier: 2 }
+  - { name: Suno, ats: ashby, token: suno, sponsor: none, tier: 2 }
+  - { name: Supabase, ats: ashby, token: supabase, sponsor: none, tier: 2 }
+  - { name: SuperAnnotate, ats: lever, token: superannotate, sponsor: low, tier: 2 }
+  - { name: Sweetgreen, ats: greenhouse, token: sweetgreen, sponsor: low, tier: 2 }
+  - { name: Sword Health, ats: lever, token: swordhealth, sponsor: none, tier: 2 }
+  - { name: Synthesia, ats: ashby, token: synthesia, sponsor: none, tier: 2 }
+  - { name: Sysdig, ats: lever, token: sysdig, sponsor: low, tier: 2 }
+  - { name: Tailscale, ats: greenhouse, token: tailscale, sponsor: none, tier: 2 }
+  - { name: Talkspace, ats: greenhouse, token: talkspace, sponsor: low, tier: 2 }
+  - { name: TaskRabbit, ats: greenhouse, token: taskrabbit, sponsor: low, tier: 2 }
+  - { name: Thumbtack, ats: ashby, token: thumbtack, sponsor: "yes", tier: 2 }
+  - { name: Tinybird, ats: lever, token: tinybird, sponsor: none, tier: 2 }
+  - { name: Toast, ats: greenhouse, token: toast, sponsor: "yes", tier: 2 }
+  - { name: Together AI, ats: greenhouse, token: togetherai, sponsor: none, tier: 2 }
+  - { name: TRM Labs, ats: ashby, token: trm-labs, sponsor: low, tier: 2 }
+  - { name: Truveta, ats: greenhouse, token: truveta, sponsor: "yes", tier: 2 }
+  - { name: Turquoise Health, ats: ashby, token: turquoise-health, sponsor: none, tier: 2 }
+  - { name: Typeface, ats: greenhouse, token: typeface, sponsor: low, tier: 2 }
+  - { name: Udemy, ats: greenhouse, token: udemy, sponsor: "yes", tier: 2 }
+  - { name: UiPath, ats: ashby, token: uipath, sponsor: "yes", tier: 2 }
+  - { name: Unit, ats: ashby, token: unit, sponsor: none, tier: 2 }
+  - { name: Upgrade, ats: greenhouse, token: upgrade, sponsor: "yes", tier: 2 }
+  - { name: Vanta, ats: ashby, token: vanta, sponsor: low, tier: 2 }
+  - { name: Vercel, ats: greenhouse, token: vercel, sponsor: low, tier: 2 }
+  - { name: Verkada, ats: greenhouse, token: verkada, sponsor: "yes", tier: 2 }
+  - { name: VideoAmp, ats: greenhouse, token: videoamp, sponsor: "yes", tier: 2 }
+  - { name: Virta Health, ats: ashby, token: virtahealth, sponsor: low, tier: 2 }
+  - { name: Voleon, ats: ashby, token: voleon, sponsor: low, tier: 2, bar: high }
+  - { name: VTS, ats: greenhouse, token: vts, sponsor: none, tier: 2 }
+  - { name: Warp, ats: ashby, token: warp, sponsor: none, tier: 2 }
+  - { name: Waymo, ats: greenhouse, token: waymo, sponsor: heavy, tier: 2, bar: high }
+  - { name: Wealthfront, ats: lever, token: wealthfront, sponsor: "yes", tier: 2 }
+  - { name: Weaviate, ats: ashby, token: weaviate, sponsor: none, tier: 2 }
+  - { name: Webflow, ats: greenhouse, token: webflow, sponsor: low, tier: 2 }
+  - { name: Whoop, ats: ashby, token: whoop, sponsor: "yes", tier: 2 }
+  - { name: Workato, ats: greenhouse, token: workato, sponsor: "yes", tier: 2 }
+  - { name: WorkOS, ats: ashby, token: workos, sponsor: low, tier: 2 }
+  - { name: WorldQuant, ats: greenhouse, token: worldquant, sponsor: "yes", tier: 2, bar: high }
+  - { name: Writer, ats: ashby, token: writer, sponsor: low, tier: 2 }
+  - { name: Yugabyte, ats: greenhouse, token: yugabyte, sponsor: "yes", tier: 2 }
+  - { name: Zapier, ats: ashby, token: zapier, sponsor: none, tier: 2 }
+  - { name: Zeta, ats: lever, token: zeta, sponsor: none, tier: 2 }
+  - { name: Zeta Global, ats: greenhouse, token: zetaglobal, sponsor: low, tier: 2 }
+  - { name: Zip, ats: ashby, token: zip, sponsor: none, tier: 2 }
+  - { name: Zocdoc, ats: greenhouse, token: zocdoc, sponsor: low, tier: 2 }
+  - { name: Zoox, ats: lever, token: zoox, sponsor: heavy, tier: 2 }
+  - { name: Cohere,      ats: ashby,   token: cohere,     sponsor: unknown, tier: 2 }
+  - { name: Capital One, ats: workday, token: capitalone, site: "capitalone/wd12/Capital_One", sponsor: heavy, tier: 2 }
+
+  # ── Big tech direct (first-party career-site APIs / Workday) ──
+  # What this batch has in common: high DE posting volume, clear junior/mid
+  # tracks, and uniformly heavy H-1B records. Unlike the "high bar" group
+  # (quant / frontier labs), these are big companies genuinely reachable
+  # at the 2-3 year level.
+  - { name: Amazon,        ats: amazon,    token: usa,     sponsor: heavy, aliases: ["Amazon.com Services LLC", "Amazon Web Services", "Amazon Development Center"], tier: 1 }
+  - { name: Meta,          ats: meta,      token: meta,    sponsor: heavy, aliases: ["Meta Platforms Inc", "Facebook"], tier: 1 }
+  - { name: Apple,         ats: apple,     token: apple,   sponsor: heavy, aliases: ["Apple Inc"], tier: 1 }
+  - { name: Microsoft,     ats: microsoft, token: msft,    sponsor: heavy, aliases: ["Microsoft Corporation"], tier: 1 }
+  - { name: Netflix,       ats: eightfold, token: netflix, site: "explore.jobs.netflix.net/netflix.com", sponsor: heavy, tier: 2 }
+  - { name: Adobe,         ats: workday,   token: adobe,   site: "adobe/wd5/external_experienced", sponsor: heavy, tier: 1 }
+  - { name: PayPal,        ats: workday,   token: paypal,  site: "paypal/wd1/jobs", sponsor: heavy, tier: 1 }
+  - { name: eBay,          ats: workday,   token: ebay,    site: "ebay/wd5/apply", sponsor: heavy, tier: 2 }
+  - { name: Expedia Group, ats: workday,   token: expedia, site: "expedia/wd108/search", sponsor: heavy, tier: 2 }
+  - { name: Zillow,        ats: workday,   token: zillow,  site: "zillow/wd5/Zillow_Group_External", sponsor: heavy, tier: 2 }
+  - { name: Target,        ats: workday,   token: target,  site: "target/wd5/targetcareers", sponsor: "yes", tier: 3 }
+
+  # ── Bulk expansion (32 companies that passed automated probe verification) ──
+  # AI/LLM direction
+  - { name: CoreWeave,        ats: greenhouse,      token: coreweave,       sponsor: "yes",   tier: 1 }
+  - { name: Glean,            ats: smartrecruiters, token: glean,           sponsor: unknown, tier: 2 }
+  - { name: You.com,          ats: greenhouse,      token: youcom,          sponsor: unknown, tier: 2 }
+  - { name: World Labs,       ats: greenhouse,      token: worldlabs,       sponsor: unknown, tier: 2 }
+  - { name: Imbue,            ats: greenhouse,      token: imbue,           sponsor: unknown, tier: 3 }
+  - { name: Inflection AI,    ats: greenhouse,      token: inflectionai,    sponsor: "yes",   tier: 2 }
+  - { name: Arize AI,         ats: greenhouse,      token: arizeai,         sponsor: unknown, tier: 2 }
+  - { name: AssemblyAI,       ats: greenhouse,      token: assemblyai,      sponsor: unknown, tier: 2 }
+  - { name: Speechmatics,     ats: greenhouse,      token: speechmatics,    sponsor: unknown, tier: 3 }
+  - { name: Kore.ai,          ats: smartrecruiters, token: koreai,          sponsor: unknown, tier: 3 }
+  # Data tooling
+  - { name: Metabase,         ats: lever,           token: metabase,        sponsor: unknown, tier: 2 }
+  - { name: Acryl Data,       ats: greenhouse,      token: acryldata,       sponsor: unknown, tier: 2 }
+  # Fintech
+  - { name: Clear Street,     ats: greenhouse,      token: clearstreet,     sponsor: "yes",   tier: 2 }
+  - { name: Highnote,         ats: greenhouse,      token: highnote,        sponsor: unknown, tier: 3 }
+  # Healthcare / life sciences
+  - { name: H1,               ats: lever,           token: h1,              sponsor: unknown, tier: 2 }
+  - { name: Verana Health,    ats: greenhouse,      token: veranahealth,    sponsor: unknown, tier: 2 }
+  - { name: Evidation,        ats: smartrecruiters, token: evidation,       sponsor: unknown, tier: 2 }
+  - { name: Natera,           ats: greenhouse,      token: natera,          sponsor: "yes",   tier: 2 }
+  - { name: Ginkgo Bioworks,  ats: greenhouse,      token: ginkgobioworks,  sponsor: "yes",   tier: 2 }
+  - { name: Strive Health,    ats: greenhouse,      token: strivehealth,    sponsor: unknown, tier: 3 }
+  - { name: Devoted Health,   ats: smartrecruiters, token: devotedhealth,   sponsor: unknown, tier: 2 }
+  - { name: Octave,           ats: greenhouse,      token: octave,          sponsor: unknown, tier: 3 }
+  - { name: Charlie Health,   ats: greenhouse,      token: charliehealth,   sponsor: unknown, tier: 3 }
+  # Consumer / sports
+  - { name: Wayfair,          ats: smartrecruiters, token: wayfair,         sponsor: heavy,   tier: 2 }
+  - { name: Gopuff,           ats: lever,           token: gopuff,          sponsor: "yes",   tier: 3 }
+  - { name: Cameo,            ats: greenhouse,      token: cameo,           sponsor: unknown, tier: 3 }
+  - { name: OfferUp,          ats: greenhouse,      token: offerup,         sponsor: unknown, tier: 3 }
+  - { name: Grailed,          ats: greenhouse,      token: grailed,         sponsor: unknown, tier: 3 }
+  - { name: SeatGeek,         ats: greenhouse,      token: seatgeek,        sponsor: "yes",   tier: 2 }
+  - { name: FanDuel,          ats: greenhouse,      token: fanduel,         sponsor: "yes",   tier: 2 }
+  - { name: Underdog Fantasy, ats: greenhouse,      token: underdogfantasy, sponsor: unknown, tier: 3 }
+  - { name: PrizePicks,       ats: greenhouse,      token: prizepicks,      sponsor: unknown, tier: 3 }
+
+  # ── Aggregators: cover the long tail beyond the company list ─────────
+  # Postings are stored under their real employer name, and sponsor records
+  # are looked up per employer as usual.
+  # Adzuna needs a free key (developer.adzuna.com -> export ADZUNA_APP_ID/APP_KEY);
+  # skipped automatically if unset. HN is the monthly "Who is hiring" thread,
+  # no configuration needed.
+  - { name: Adzuna,        ats: adzuna,    token: us,      sponsor: unknown, tier: 3 }
+  - { name: HN Hiring,     ats: hn,        token: hn,      sponsor: unknown, tier: 3 }
+
+# ── Wanted but no token found (custom career sites or migrated boards) ────
+# These companies are worth applying to, but no public JSON job board was found.
+# Either check their careers page manually, or probe again some other day.
+# How to find a token: open the company's careers page -> F12 Network tab ->
+# refresh -> look for requests to boards-api.greenhouse.io / api.lever.co /
+# api.ashbyhq.com; the segment in that URL is the token.
+#
+#   Two Sigma, dbt Labs, Etsy, HashiCorp, Retool, Hex, Snyk, Weights & Biases,
+#   Hugging Face, Airbyte, Attentive, Criteo, Integral Ad Science,
+#   Tempus, Spring Health, Datavant, Warby Parker, Millennium, Balyasny
