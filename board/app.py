@@ -145,7 +145,9 @@ def _matched_stories(det: dict) -> list[dict]:
 
 @app.get("/")
 def index():
-    return send_from_directory(app.static_folder, "index.html")
+    resp = send_from_directory(app.static_folder, "index.html")
+    resp.headers["Cache-Control"] = "no-cache"  # always revalidate after updates
+    return resp
 
 
 @app.get("/api/jobs")
