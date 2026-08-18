@@ -457,6 +457,85 @@ def api_stats():
                    week={k: n for k, n in week}, funnel_order=FUNNEL)
 
 
+
+
+# ── Manual fetch with live progress ─────────────────────────────
+import re as _re
+import subprocess as _sp
+import threading as _th
+import time as _time
+from collections import deque as _deque
+
+_SCORE_EST, _ENRICH_EST = 130, 90   # seconds, rough phase estimates for ETA
+
+FETCH_STATE = {
+    "running": False, "phase": "idle", "done": 0, "total": 0,
+    "started": None, "phase_started": None, "ended": None, "rc": None,
+    "log": _deque(maxlen=12),
+}
+_FETCH_LOCK = _th.Lock()
+
+
+def _fetch_worker():
+    st = FETCH_STATE
+    proc = _sp.Popen([sys.executable, "-u", str(REPO_ROOT / "jobpipe.py"), "fetch"],
+                     stdout=_sp.PIPE, stderr=_sp.STDOUT, text=True,
+                     cwd=REPO_ROOT, bufsize=1)
+    ansi = _re.compile(r"\x1b\[[0-9;]*m")
+    for raw in proc.stdout:
+        line = ansi.sub("", raw.rstrip())
+        if not line.strip():
+            continue
+        st["log"].append(line)
+        m = _re.search(r"Fetching (\d+) companies", line)
+        if m:
+            st["total"] = int(m.group(1))
+        elif _re.match(r"\s{2}\S.*\s\d+\s+jobs", line):
+            st["done"] += 1
+        elif "Scoring" in line:
+            st["phase"], st["phase_started"] = "scoring", _time.time()
+        elif "LLM refinement" in line:
+            st["phase"], st["phase_started"] = "enrich", _time.time()
+    proc.wait()
+    st.update(rc=proc.returncode, ended=_time.time(), running=False,
+              phase="done" if proc.returncode == 0 else "error")
+
+
+@app.post("/api/fetch/start")
+def api_fetch_start():
+    with _FETCH_LOCK:
+        if FETCH_STATE["running"]:
+            return jsonify(error="a fetch is already running"), 409
+        FETCH_STATE.update(running=True, phase="fetching", done=0, total=0,
+                           rc=None, ended=None, started=_time.time(),
+                           phase_started=_time.time())
+        FETCH_STATE["log"].clear()
+        _th.Thread(target=_fetch_worker, daemon=True).start()
+    return jsonify(ok=True)
+
+
+@app.get("/api/fetch/status")
+def api_fetch_status():
+    st = FETCH_STATE
+    now = _time.time()
+    eta = None
+    if st["running"] and st["started"]:
+        if st["phase"] == "fetching" and st["done"] >= 3:
+            rate = st["done"] / max(now - st["started"], 1)
+            eta = (st["total"] - st["done"]) / rate + _SCORE_EST + _ENRICH_EST
+        elif st["phase"] == "scoring":
+            eta = max(_SCORE_EST - (now - st["phase_started"]), 10) + _ENRICH_EST
+        elif st["phase"] == "enrich":
+            eta = max(_ENRICH_EST - (now - st["phase_started"]), 10)
+    return jsonify(
+        running=st["running"], phase=st["phase"], done=st["done"],
+        total=st["total"], rc=st["rc"],
+        elapsed=round(now - st["started"]) if st["started"] else None,
+        eta=round(eta) if eta else None,
+        log=list(st["log"]),
+    )
+
+
 if __name__ == "__main__":
     if not PROFILE_PATH.exists():
         raise SystemExit(
