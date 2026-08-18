@@ -53,7 +53,7 @@ SCHEMA = {
         "seniority": {"type": "string", "enum": ["junior", "mid", "senior"]},
         "sponsorship": {
             "type": "string", "enum": ["yes", "no", "unknown"],
-            "description": "no = the JD explicitly rules out sponsorship / requires "
+            "description": "no = the JD rules out sponsorship, including hedged forms like 'may not be able to support/sponsor H-1B at this time' / requires "
                            "citizenship or a green card / requires clearance; "
                            "yes = explicitly offered; otherwise unknown.",
         },

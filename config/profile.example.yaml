@@ -369,11 +369,15 @@ sponsorship:
     - "(?:active|ability to obtain).{0,20}clearance"
     - "green\\s+card\\s+holders?\\s+only"
     - "citizens?\\s+or\\s+permanent\\s+residents?\\s+only"
+    # Hedged/indirect phrasings (2026-08-18; real Roblox example: "may not be
+    # able to employ ... or support future H-1B sponsorship at this time")
+    - "not\\s+(?:be\\s+)?able\\s+to[\\s\\S]{0,160}sponsor"
+    - "not[\\s\\S]{0,80}support\\s+(?:future\\s+)?h-?1b"
   positive: # +10
     - "(?:will|can|do)\\s+sponsor"
     - "visa\\s+sponsorship\\s+(?:is\\s+)?available"
     - "sponsorship\\s+(?:is\\s+)?(?:available|offered|provided)"
-    - "h-?1b\\s+(?:transfer|sponsorship)"
+    - "h-?1b\\s+transfer"
     - "we\\s+sponsor"
 
 # ── Company-level sponsorship track record bonus (from USCIS H-1B data) ──
