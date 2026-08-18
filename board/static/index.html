@@ -34,6 +34,7 @@
   .fetch-btn { border: 1px solid var(--accent); color: var(--accent); background: var(--card);
                border-radius: 7px; padding: 5px 12px; cursor: pointer; font-size: 13px; }
   .fetch-btn:disabled { opacity: .5; cursor: default; }
+  #fetch-strip[hidden] { display: none; }  /* author display:flex must not defeat the hidden attribute */
   #fetch-strip { display: flex; align-items: center; gap: 12px; padding: 7px 22px;
                  background: #eef6ff; border-bottom: 1px solid var(--line);
                  font-size: 12.5px; color: var(--ink); position: sticky; top: 0; z-index: 4; }
