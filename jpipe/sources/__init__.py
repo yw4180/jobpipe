@@ -18,7 +18,8 @@ import re
 import requests
 
 from . import (adzuna, amazon, apple, ashby, eightfold, greenhouse, hn, lever,
-               meta, microsoft, recruitee, smartrecruiters, workable, workday)
+               meta, microsoft, oracle, recruitee, smartrecruiters, workable,
+               workday)
 
 SOURCES = {
     "greenhouse": greenhouse,
@@ -30,6 +31,7 @@ SOURCES = {
     "meta": meta,              # metacareers GraphQL
     "apple": apple,            # jobs.apple.com
     "microsoft": microsoft,    # Eightfold PCSX (not the standard eightfold API)
+    "oracle": oracle,          # Oracle Cloud Recruiting (JPMorgan, banks, hospitals, universities)
     "smartrecruiters": smartrecruiters,
     "workable": workable,
     "recruitee": recruitee,

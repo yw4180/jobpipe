@@ -403,6 +403,8 @@ companies:
   - { name: Underdog Fantasy, ats: greenhouse,      token: underdogfantasy, sponsor: unknown, tier: 3 }
   - { name: PrizePicks,       ats: greenhouse,      token: prizepicks,      sponsor: unknown, tier: 3 }
 
+  # ── Oracle Cloud Recruiting (2026-08-18): banks, hospitals, universities ──
+  - { name: JPMorgan Chase, ats: oracle, token: jpmc, site: "jpmc.fa.oraclecloud.com/CX_1001", sponsor: heavy, tier: 1 }
   # ── Aggregators: cover the long tail beyond the company list ─────────
   # Postings are stored under their real employer name, and sponsor records
   # are looked up per employer as usual.
