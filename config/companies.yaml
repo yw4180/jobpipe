@@ -403,6 +403,60 @@ companies:
   - { name: Underdog Fantasy, ats: greenhouse,      token: underdogfantasy, sponsor: unknown, tier: 3 }
   - { name: PrizePicks,       ats: greenhouse,      token: prizepicks,      sponsor: unknown, tier: 3 }
 
+
+  # ── H-1B big employers via Workday/Oracle (2026-08-18, agent-verified) ──
+  - { name: Nvidia, ats: workday, token: nvidia, site: "nvidia/wd5/NVIDIAExternalCareerSite", sponsor: heavy, tier: 1 }
+  - { name: Salesforce, ats: workday, token: salesforce, site: "salesforce/wd12/External_Career_Site", sponsor: heavy, tier: 1 }
+  - { name: Intel, ats: workday, token: intel, site: "intel/wd1/External", sponsor: heavy, tier: 2 }
+  - { name: Broadcom, ats: workday, token: broadcom, site: "broadcom/wd1/External_Career", sponsor: heavy, tier: 2 }
+  - { name: Applied Materials, ats: workday, token: amat, site: "amat/wd1/External", sponsor: heavy, tier: 2 }
+  - { name: Analog Devices, ats: workday, token: analogdevices, site: "analogdevices/wd1/External", sponsor: yes, tier: 2 }
+  - { name: Micron, ats: workday, token: micron, site: "micron/wd1/External", sponsor: heavy, tier: 2 }
+  - { name: Autodesk, ats: workday, token: autodesk, site: "autodesk/wd1/Ext", sponsor: heavy, tier: 2 }
+  - { name: Palo Alto Networks, ats: workday, token: paloaltonetworks, site: "paloaltonetworks/wd5/panwexternalcareers", sponsor: heavy, tier: 1 }
+  - { name: HP, ats: workday, token: hp, site: "hp/wd5/ExternalCareerSite", sponsor: heavy, tier: 2 }
+  - { name: HPE, ats: workday, token: hpe, site: "hpe/wd5/Jobsathpe", sponsor: heavy, tier: 2 }
+  - { name: Workday, ats: workday, token: workday, site: "workday/wd5/Workday", sponsor: heavy, tier: 2 }
+  - { name: Accenture, ats: workday, token: accenture, site: "accenture/wd103/AccentureCareers", sponsor: heavy, tier: 2 }
+  - { name: Booz Allen, ats: workday, token: bah, site: "bah/wd1/BAH_Jobs", sponsor: yes, tier: 2 }
+  - { name: Citi, ats: workday, token: citi, site: "citi/wd5/2", sponsor: heavy, tier: 1 }
+  - { name: Wells Fargo, ats: workday, token: wf, site: "wf/wd1/WellsFargoJobs", sponsor: heavy, tier: 1 }
+  - { name: Bank of America, ats: workday, token: ghr, site: "ghr/wd1/lateral-us", sponsor: heavy, tier: 1 }
+  - { name: BlackRock, ats: workday, token: blackrock, site: "blackrock/wd1/BlackRock_Professional", sponsor: heavy, tier: 1 }
+  - { name: Fidelity, ats: workday, token: fmr, site: "fmr/wd1/FidelityCareers", sponsor: heavy, tier: 2 }
+  - { name: Mastercard, ats: workday, token: mastercard, site: "mastercard/wd1/CorporateCareers", sponsor: heavy, tier: 1 }
+  - { name: S&P Global, ats: workday, token: spgi, site: "spgi/wd5/SPGI_Careers", sponsor: heavy, tier: 2 }
+  - { name: Nasdaq, ats: workday, token: nasdaq, site: "nasdaq/wd1/Global_External_Site", sponsor: heavy, tier: 2 }
+  - { name: CME Group, ats: workday, token: cmegroup, site: "cmegroup/wd1/CME_Careers", sponsor: yes, tier: 2 }
+  - { name: Fiserv, ats: workday, token: fiserv, site: "fiserv/wd5/EXT", sponsor: yes, tier: 3 }
+  - { name: FIS, ats: workday, token: fis, site: "fis/wd5/SearchJobs", sponsor: yes, tier: 3 }
+  - { name: Comcast, ats: workday, token: comcast, site: "comcast/wd5/Comcast_Careers", sponsor: heavy, tier: 2 }
+  - { name: Disney, ats: workday, token: disney, site: "disney/wd5/disneycareer", sponsor: heavy, tier: 2 }
+  - { name: AT&T, ats: workday, token: att, site: "att/wd1/ATTGeneral", sponsor: heavy, tier: 2 }
+  - { name: T-Mobile, ats: workday, token: tmobile, site: "tmobile/wd1/External", sponsor: yes, tier: 2 }
+  - { name: Verizon, ats: workday, token: verizon, site: "verizon/wd12/verizon-careers", sponsor: heavy, tier: 2 }
+  - { name: Nike, ats: workday, token: nike, site: "nike/wd1/nke", sponsor: yes, tier: 3 }
+  - { name: Home Depot, ats: workday, token: homedepot, site: "homedepot/wd5/CareerDepot", sponsor: yes, tier: 3 }
+  - { name: Lowe's, ats: workday, token: lowes, site: "lowes/wd5/LWS_External_CS", sponsor: yes, tier: 3 }
+  - { name: MSKCC, ats: workday, token: msk, site: "msk/wd108/MSKCC_Careers_Primary", sponsor: yes, tier: 1 }
+  - { name: Montefiore, ats: workday, token: montefiore, site: "montefiore/wd12/MMC", sponsor: yes, tier: 2 }
+  - { name: Mass General Brigham, ats: workday, token: massgeneralbrigham, site: "massgeneralbrigham/wd1/MGBExternal", sponsor: yes, tier: 1 }
+  - { name: Hospital for Special Surgery, ats: workday, token: hss, site: "hss/wd1/HSS_Careers", sponsor: yes, tier: 2 }
+  - { name: Simons Foundation, ats: workday, token: simonsfoundation, site: "simonsfoundation/wd1/simonsfoundationcareers", sponsor: yes, tier: 1 }
+  # Oracle Cloud Recruiting
+  - { name: Oracle, ats: oracle, token: eeho, site: "eeho.fa.us2.oraclecloud.com/CX_45001", sponsor: heavy, tier: 1 }
+  - { name: American Express, ats: oracle, token: egug, site: "egug.fa.us2.oraclecloud.com/CX_1001", sponsor: heavy, tier: 1 }
+  - { name: Texas Instruments, ats: oracle, token: edbz, site: "edbz.fa.us2.oraclecloud.com/CX_1001", sponsor: heavy, tier: 2 }
+  - { name: Fortinet, ats: oracle, token: edel, site: "edel.fa.us2.oraclecloud.com/CX_2001", sponsor: heavy, tier: 2 }
+  - { name: Uber, ats: oracle, token: iaziqy, site: "iaziqy.fa.ocs.oraclecloud.com/CX_1001", sponsor: heavy, tier: 1 }
+  - { name: Dell, ats: oracle, token: enterpriseplatform, site: "enterpriseplatform.dell.com/CX_1001", sponsor: heavy, tier: 2 }
+  - { name: Mount Sinai, ats: oracle, token: ejis, site: "ejis.fa.us6.oraclecloud.com/CX_1001", sponsor: yes, tier: 1 }
+  - { name: Northwell Health, ats: oracle, token: eppr, site: "eppr.fa.us2.oraclecloud.com/CX_2", sponsor: yes, tier: 2 }
+  # Standard ATS (from discovery leads)
+  - { name: ServiceNow, ats: smartrecruiters, token: servicenow, sponsor: heavy, tier: 2 }
+  - { name: Dropbox, ats: greenhouse, token: dropbox, sponsor: heavy, tier: 2 }
+  - { name: Palantir, ats: lever, token: palantir, sponsor: heavy, tier: 2 }
+
   # ── Oracle Cloud Recruiting (2026-08-18): banks, hospitals, universities ──
   - { name: JPMorgan Chase, ats: oracle, token: jpmc, site: "jpmc.fa.oraclecloud.com/CX_1001", sponsor: heavy, tier: 1 }
   # ── Aggregators: cover the long tail beyond the company list ─────────
