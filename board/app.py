@@ -109,9 +109,12 @@ def _golden_where(window: tuple[int, int] | None = None) -> tuple[str, list]:
         params += exclude_bar
     tiers = g.get("title_tiers") or []
     if tiers:
+        # weak-tier (generic SWE) titles get in on a high score — a 90-point
+        # "Software Engineer" with matching stack is signal, not noise
         conds.append(
-            f"json_extract(score_detail,'$.title_tier') IN ({','.join('?' * len(tiers))})")
-        params += tiers
+            f"(json_extract(score_detail,'$.title_tier') IN ({','.join('?' * len(tiers))})"
+            " OR score >= ?)")
+        params += [*tiers, g.get("tier_stretch_min_score", 75)]
     return " AND ".join(conds), params
 
 

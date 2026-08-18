@@ -426,7 +426,8 @@ golden:
   exclude_senior_title: true   # senior/sr titles never go golden — honestly low odds, don't take a slot
   sponsor: [heavy, yes, positive, low]   # low passes too: low counts from entity-name mismatches are common
   exclude_bar: [high]
-  title_tiers: [strong, good]   # core directions only; generic SWE riding a freshness bonus is not golden
+  title_tiers: [strong, good]
+  tier_stretch_min_score: 75   # weak-tier titles admitted if score >= this   # core directions only; generic SWE riding a freshness bonus is not golden
 
 # ── LLM fine-screening (jpipe/enrich.py, second pass after fetch) ──────
 # The long tail regexes can't handle ("8+ years across...") goes through a
