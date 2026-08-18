@@ -350,6 +350,7 @@ function jobCard(j, gold) {
           ${j.bar === 'high' ? '<span class="tag bar-high" title="High-bar company: cold applies rarely convert">high bar</span>' : ''}
         </div>
         <div class="acts">
+          ${j.status === 'new' || j.status === 'shortlisted' ? `<button data-applied="1" title="Log an application (channel: cold — use the Apply tab for referral details)">✓ Applied</button>` : ''}
           ${j.status === 'new' ? `<button data-act="shortlisted">☆ Save</button><button data-act="skipped" title="Not applying; hide it from the list">✕ Skip</button>`
              : j.status === 'shortlisted' ? `<button data-act="new" title="Back to new; removed from Saved and the apply queue">↩ Unsave</button>`
              : `<button data-act="new" title="Back to new; reappears in the list">↩ Restore</button>`}
@@ -457,6 +458,17 @@ async function loadSaved() {
 
 /* ── Events (shared by the lists) ── */
 async function listClick(e, reload) {
+  const ap = e.target.closest('button[data-applied]');
+  if (ap) {
+    const id = ap.closest('.job').dataset.id;
+    try {
+      await api(`/api/jobs/${id}/apply`, { method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ channel: 'cold' }) });
+      toast('Application logged');
+      reload(); loadStats();
+    } catch (err) { toast('Failed: ' + err.message); }
+    return;
+  }
   const btn = e.target.closest('button[data-act]');
   if (btn) {
     const id = btn.closest('.job').dataset.id;
