@@ -697,6 +697,8 @@ async function pollFetch() {
   try { d = await api('/api/fetch/status'); } catch { return; }
   const strip = $('#fetch-strip');
   if (d.running) {
+    // 只要发现在跑就自动开始轮询——不管是谁触发的（按钮/定时任务/别的页面）
+    if (!fetchPoll) fetchPoll = setInterval(pollFetch, 2000);
     strip.hidden = false;
     $('#btn-fetch').disabled = true;
     const phase = { fetching: 'Fetching boards', scoring: 'Scoring', enrich: 'LLM refinement' }[d.phase] || d.phase;
@@ -710,6 +712,7 @@ async function pollFetch() {
       ` · ETA ${fmtEta(d.eta)}`;
   } else {
     $('#btn-fetch').disabled = false;
+    if (d.phase === 'idle' && !strip.hidden) strip.hidden = true;  // 没在跑就别占地方
     if (d.phase === 'done' && !strip.hidden) {
       $('#fs-fill').style.width = '100%';
       $('#fs-text').textContent = 'Done — refreshing…';
@@ -733,7 +736,8 @@ $('#btn-fetch').onclick = async () => {
     if (!fetchPoll) fetchPoll = setInterval(pollFetch, 2000);
   } catch (e) { toast('Failed: ' + e.message); }
 };
-pollFetch();  // page load: pick up an in-flight fetch (e.g. cron)
+pollFetch();  // page load: picks up any in-flight fetch and self-starts polling
+setInterval(() => { if (!fetchPoll) pollFetch(); }, 30000);  // idle heartbeat: catch cron-started fetches
 
 loadStats(); show('golden');
 </script>
