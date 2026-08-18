@@ -190,3 +190,17 @@ The board binds to `127.0.0.1` only; it is a personal tool, not something to exp
 ## License
 
 [MIT](LICENSE).
+
+## Updating
+
+```bash
+python jobpipe.py update
+```
+
+Pulls the latest code, installs any new dependencies, and prints what
+changed plus any follow-up steps (dashboard restart, schedule re-install).
+Your personal files — `config/profile.yaml`, `config/answers.yaml`, and
+`data/` — are never tracked by git, so updates can't touch them. New
+config options always ship with safe defaults; check `CHANGELOG.md` or
+diff `config/profile.example.yaml` if you want to adopt them explicitly.
+

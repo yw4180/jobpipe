@@ -27,6 +27,40 @@ def cmd_fetch(a):
     fetch.run(a.only)
 
 
+def cmd_update(a):
+    """Pull the latest code, install deps, and show what changed."""
+    import subprocess
+    from pathlib import Path
+    root = Path(__file__).resolve().parent
+
+    def git(*args):
+        return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
+
+    old = git("rev-parse", "HEAD").stdout.strip()
+    pull = git("pull", "--ff-only")
+    if pull.returncode != 0:
+        sys.exit("git pull failed (local changes in tracked files?):\n" + pull.stderr.strip()
+                 + "\nYour config/ and data/ are never tracked — check `git status`.")
+    new = git("rev-parse", "HEAD").stdout.strip()
+    if old == new:
+        print("Already up to date.")
+        return
+
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "-r",
+                    str(root / "requirements.txt")], check=False)
+
+    log = git("log", "--oneline", f"{old}..{new}").stdout.strip()
+    print(f"Updated ({len(log.splitlines())} commits):\n{log}\n")
+    changed = git("diff", "--name-only", old, new).stdout
+    print("Next steps:")
+    print("  - Restart the dashboard:  python board/app.py")
+    if "jpipe/schedule.py" in changed:
+        print("  - Schedule template changed — re-install it:  python jobpipe.py schedule")
+    if "config/profile.example.yaml" in changed:
+        print("  - profile.example.yaml changed — new options exist; diff it against")
+        print("    your config/profile.yaml if you want them (defaults apply otherwise)")
+
+
 def cmd_rescore(a):
     fetch.rescore()
 
@@ -142,6 +176,9 @@ def main():
     s = sub.add_parser("fetch", help="fetch all job boards -> store -> score")
     s.add_argument("--only", help="only fetch companies whose name contains this string")
     s.set_defaults(func=cmd_fetch)
+
+    s = sub.add_parser("update", help="Pull the latest code, install deps, show changes")
+    s.set_defaults(func=cmd_update)
 
     s = sub.add_parser("rescore", help="re-score after editing profile.yaml (no re-fetch)")
     s.set_defaults(func=cmd_rescore)
