@@ -55,8 +55,6 @@ title_blockers:
   - intern
   - phd
   - lead
-  - iii
-  - iv
   - fellow
   - apprentice
 
@@ -92,6 +90,8 @@ junior_title_bonus:
 title_penalties:
   senior: 18
   sr: 18
+  iii: 12   # institutional pay-grade (hospitals/universities), not always senior — soft penalty, let YoE decide (2026-08-18)
+  iv: 20
 
 # ── Tech keywords ────────────────────────────────────────
 # Each hit scores once, capped at keyword_cap so long JDs can't farm points.
