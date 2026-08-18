@@ -687,7 +687,7 @@ $('#tab-overview').onclick = () => show('overview');
 
 
 /* -- Fetch-now with live progress -- */
-let fetchPoll = null;
+let fetchPoll = null, wasRunning = false;
 function fmtEta(s) {
   if (s == null) return 'estimating…';
   return s >= 90 ? `~${Math.round(s / 60)} min` : `~${s}s`;
@@ -699,6 +699,7 @@ async function pollFetch() {
   if (d.running) {
     // 只要发现在跑就自动开始轮询——不管是谁触发的（按钮/定时任务/别的页面）
     if (!fetchPoll) fetchPoll = setInterval(pollFetch, 2000);
+    wasRunning = true;
     strip.hidden = false;
     $('#btn-fetch').disabled = true;
     const phase = { fetching: 'Fetching boards', scoring: 'Scoring', enrich: 'LLM refinement' }[d.phase] || d.phase;
@@ -712,18 +713,20 @@ async function pollFetch() {
       ` · ETA ${fmtEta(d.eta)}`;
   } else {
     $('#btn-fetch').disabled = false;
-    if (d.phase === 'idle' && !strip.hidden) strip.hidden = true;  // 没在跑就别占地方
-    if (d.phase === 'done' && !strip.hidden) {
+    clearInterval(fetchPoll); fetchPoll = null;
+    if (wasRunning && d.phase === 'done') {
+      // 本页亲眼看着跑完的：显示完成态 1.5 秒再收起并刷新
       $('#fs-fill').style.width = '100%';
       $('#fs-text').textContent = 'Done — refreshing…';
-      clearInterval(fetchPoll); fetchPoll = null;
       setTimeout(() => { strip.hidden = true; loadStats(); TABS[currentTab](); }, 1500);
       toast('Fetch complete');
-    } else if (d.phase === 'error' && !strip.hidden) {
+    } else if (wasRunning && d.phase === 'error') {
       $('#fs-text').textContent = 'Fetch failed — see data/fetch.log';
-      clearInterval(fetchPoll); fetchPoll = null;
       setTimeout(() => strip.hidden = true, 5000);
+    } else {
+      strip.hidden = true;  // 兜底：没在跑就绝不显示，不管之前什么状态
     }
+    wasRunning = false;
   }
 }
 $('#btn-fetch').onclick = async () => {
