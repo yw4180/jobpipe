@@ -67,7 +67,8 @@ SENIORITY_CASE = """CASE
   ELSE 'mid' END"""
 
 
-def _golden_where(window: tuple[int, int] | None = None) -> tuple[str, list]:
+def _golden_where(window: tuple[int, int] | None = None,
+                  min_score: int | None = None) -> tuple[str, list]:
     """Turn the `golden` section of profile.yaml into SQL conditions.
     Config changes need no code changes here.
 
@@ -94,7 +95,7 @@ def _golden_where(window: tuple[int, int] | None = None) -> tuple[str, list]:
         f"sponsor_flag IN ({','.join('?' * len(sponsors))})",
         yoe_cond,
     ]
-    params: list = [f"-{hi} day", g.get("min_score", 60), *sponsors, *yoe_params]
+    params: list = [f"-{hi} day", min_score if min_score is not None else g.get("min_score", 60), *sponsors, *yoe_params]
     if lo:
         conds.append(f"date({FRESH_DATE}) < date('now', 'localtime', ?)")
         params.append(f"-{lo} day")
@@ -169,8 +170,15 @@ def api_jobs():
     if golden:
         g = profile().get("golden", {})
         top_d = g.get("max_age_days", 2)
-        window = (0, top_d) if golden == "1" else (top_d, g.get("second_window_days", 4))
-        gw, gp = _golden_where(window)
+        catch_d = g.get("second_window_days", 4)
+        if golden == "3":
+            # Backlog: high-scoring, reachable, still-unhandled jobs that
+            # aged out of the fresh windows — so they don't sink forever
+            gw, gp = _golden_where((catch_d, g.get("backlog_max_age", 30)),
+                                   min_score=g.get("backlog_min_score", 85))
+        else:
+            window = (0, top_d) if golden == "1" else (top_d, catch_d)
+            gw, gp = _golden_where(window)
         where.append(f"({gw})")
         params += gp
     if roles:

@@ -431,7 +431,9 @@ golden:
   sponsor: [heavy, yes, positive, low]   # low passes too: low counts from entity-name mismatches are common
   exclude_bar: [high]
   title_tiers: [strong, good]
-  tier_stretch_min_score: 75   # weak-tier titles admitted if score >= this   # core directions only; generic SWE riding a freshness bonus is not golden
+  tier_stretch_min_score: 75
+  backlog_min_score: 85   # backlog section: high-score jobs that aged past the fresh window
+  backlog_max_age: 30   # weak-tier titles admitted if score >= this   # core directions only; generic SWE riding a freshness bonus is not golden
 
 # ── LLM fine-screening (jpipe/enrich.py, second pass after fetch) ──────
 # The long tail regexes can't handle ("8+ years across...") goes through a
