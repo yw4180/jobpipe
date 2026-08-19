@@ -434,21 +434,26 @@ async function loadJobs(append) {
 }
 async function loadGolden() {
   const p = filterParams('golden').toString();
-  const [t, c] = await Promise.all([
-    api(`/api/jobs?golden=1&limit=100&status=new&${p}`), api(`/api/jobs?golden=2&limit=100&status=new&${p}`)]);
+  const [t, c, b] = await Promise.all([
+    api(`/api/jobs?golden=1&limit=100&status=new&${p}`),
+    api(`/api/jobs?golden=2&limit=100&status=new&${p}`),
+    api(`/api/jobs?golden=3&limit=100&status=new&${p}`)]);
   const roleBd = list => {
     const cnt = {};
     list.forEach(j => cnt[j.role] = (cnt[j.role] || 0) + 1);
     return Object.entries(cnt).map(([k, v]) => `${ROLE_LABEL[k] || k} ${v}`).join(' · ');
   };
   const all = t.jobs.concat(c.jobs);
-  $('#count').textContent = `TOP ${t.total} · Catch-up ${c.total}` + (all.length ? `｜${roleBd(all)}` : '');
+  $('#count').textContent = `TOP ${t.total} · Catch-up ${c.total} · Backlog ${b.total}` + (all.length ? `｜${roleBd(all)}` : '');
   $('#golden-top').innerHTML = t.jobs.length
     ? t.jobs.map(j => jobCard(j, true)).join('')
     : '<div class="empty">No TOP jobs yet today — check back after the next scheduled fetch</div>';
   $('#golden-catchup').innerHTML = c.jobs.length
     ? c.jobs.map(j => jobCard(j, false)).join('')
     : '<div class="empty">Catch-up section is empty</div>';
+  $('#golden-backlog').innerHTML = b.jobs.length
+    ? b.jobs.map(j => jobCard(j, false)).join('')
+    : '<div class="empty">No high-score backlog — nice, everything is followed up</div>';
 }
 async function loadSaved() {
   const d = await api('/api/jobs?limit=200&' + filterParams('saved'));
@@ -488,6 +493,7 @@ async function listClick(e, reload) {
 }
 $('#golden-top').addEventListener('click', e => listClick(e, loadGolden));
 $('#golden-catchup').addEventListener('click', e => listClick(e, loadGolden));
+$('#golden-backlog').addEventListener('click', e => listClick(e, loadGolden));
 $('#saved-list').addEventListener('click', e => listClick(e, loadSaved));
 $('#jobs-list').addEventListener('click', e => listClick(e, () => loadJobs(false)));
 $('#more').onclick = () => loadJobs(true);
