@@ -247,12 +247,17 @@ def rescore(conn=None) -> None:
     # Runs after the scoring loop (which rewrites verdict) and re-executes on
     # every rescore, keeping the DB rolling.
     from .config import threshold
+    # High-scoring roles are exempt: a company that reposts a strong job
+    # keeps an old posted_at (Amazon repost example), so archiving by date
+    # would drop a still-active good job. Let those land in the Backlog
+    # section instead; only low-score aged jobs are cleared.
+    keep_score = (profile().get("golden", {}) or {}).get("backlog_min_score", 85)
     with conn:
         arch = conn.execute(
             """UPDATE jobs SET verdict='reject', reject_reason='Posted over 30 days ago (archive)'
-               WHERE active=1 AND verdict='keep'
+               WHERE active=1 AND verdict='keep' AND score < ?
                  AND date(COALESCE(posted_at, first_seen)) < date('now','localtime',?)""",
-            (f"-{threshold('archive_days', 30)} day",),
+            (keep_score, f"-{threshold('archive_days', 30)} day",),
         ).rowcount
 
     # LLM-screening vetoes must be reapplied too (the loop above rewrites
