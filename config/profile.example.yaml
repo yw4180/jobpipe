@@ -53,6 +53,12 @@ title_blockers:
   - manager
   - architect
   - intern
+  - interns
+  - internship*   # word-boundary "intern" misses "Internship"; NOT intern* (kills Internal/International)
+  - co-op
+  - coop
+  - summer        # "Summer 2027 ..." program titles
+  - campus
   - phd
   - lead
   - fellow

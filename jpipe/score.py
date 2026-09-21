@@ -13,7 +13,7 @@ import functools
 import re
 from datetime import date
 
-from .config import profile
+from .config import blocklist, profile
 
 TITLE_POINTS = {"strong": 45, "good": 32, "weak": 15}
 
@@ -185,6 +185,16 @@ def score_job(job: dict, company_sponsor: str = "unknown",
     blob = f"{title_l}\n{loc_l}\n{desc}".lower()
 
     detail: dict = {"parts": {}, "hits": []}
+
+    # ── Hard reject 0: personal blocklist (`skip --block-company/--block-title`) ──
+    bl = blocklist()
+    company_l = (job.get("company") or "").strip().lower()
+    for e in bl["companies"]:
+        if e["value"].strip().lower() == company_l:
+            return "reject", 0, {**detail, "reason": "Company blocklisted"}
+    for e in bl["title_terms"]:
+        if has(title_l, e["value"]):
+            return "reject", 0, {**detail, "reason": f"Title contains '{e['value']}' (blocklist)"}
 
     # ── Hard reject 1: title seniority/direction mismatch ─────────
     for bad in p.get("title_blockers") or []:

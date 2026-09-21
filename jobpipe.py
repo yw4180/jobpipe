@@ -13,7 +13,8 @@ from __future__ import annotations
 import argparse
 import sys
 
-from jpipe import dashboard, fetch, schedule, shortlist, sponsor, track
+from jpipe import config, dashboard, fetch, schedule, shortlist, sponsor, track
+from jpipe import db
 from jpipe.db import ALL_STATUSES, CHANNELS
 
 ACTIVITY_KINDS = ["referral_ask", "networking", "followup", "recruiter_reply"]
@@ -79,6 +80,29 @@ def cmd_apply(a):
         sys.exit(f"No item #{a.index} in the shortlist. Run `python jobpipe.py shortlist` first.")
     app_id = track.record_application(job, a.channel, a.resume, a.tailored, a.note)
     print(f"✓ #{app_id}  {job['company']} — {job['title']}  ({a.channel}/{a.resume})")
+
+
+def cmd_skip(a):
+    job = shortlist.resolve(a.index)
+    if job is None:
+        sys.exit(f"No item #{a.index} in the shortlist. Run `python jobpipe.py shortlist` first.")
+    conn = db.connect()
+    with conn:
+        conn.execute("UPDATE jobs SET status='skipped' WHERE id=?", (job["id"],))
+        db.log_event(conn, "skip", company=job["company"], note=a.reason)
+    print(f"✗ skipped  {job['company']} — {job['title']}" + (f"  ({a.reason})" if a.reason else ""))
+    changed = False
+    if a.block_company:
+        if config.add_block("companies", job["company"], a.reason):
+            print(f"  ⛔ company blocklisted: {job['company']}")
+        changed = True
+    if a.block_title:
+        if config.add_block("title_terms", a.block_title, a.reason):
+            print(f"  ⛔ title term blocklisted: {a.block_title}")
+        changed = True
+    if changed:
+        print("  re-scoring with the new blocklist…")
+        fetch.rescore(conn)
 
 
 def cmd_manual(a):
@@ -203,6 +227,13 @@ def main():
     s.add_argument("--tailored", action="store_true", help="this application was tailored")
     s.add_argument("--note")
     s.set_defaults(func=cmd_apply)
+
+    s = sub.add_parser("skip", help="skip a shortlist item; optionally blocklist its company or a title term")
+    s.add_argument("index", type=int, help="shortlist index (same numbering as `apply`)")
+    s.add_argument("--reason", help="why (stored with the event and the blocklist entry)")
+    s.add_argument("--block-company", action="store_true", help="hard-reject every future job from this company")
+    s.add_argument("--block-title", metavar="TERM", help="add a word-boundary title blocker (trailing * = prefix)")
+    s.set_defaults(func=cmd_skip)
 
     s = sub.add_parser("manual", help="record an application outside the shortlist (seen elsewhere / referral)")
     s.add_argument("--company", required=True)
