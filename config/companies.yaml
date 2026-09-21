@@ -27,7 +27,7 @@ companies:
   - { name: Starburst,         ats: greenhouse, token: starburst,         sponsor: unknown, tier: 2 }
   - { name: Monte Carlo,       ats: ashby,      token: montecarlodata,    sponsor: unknown, tier: 2 }
   - { name: Materialize,       ats: ashby,      token: materialize,       sponsor: unknown, tier: 3 }
-  - { name: Temporal,          ats: greenhouse, token: temporaltechnologies, sponsor: unknown, tier: 3 }
+  - { name: Temporal,          ats: ashby,      token: temporal,          sponsor: unknown, tier: 3 }
 
   # ── AI / ML platform ──────────────────────────────────
   - { name: Anthropic,         ats: greenhouse, token: anthropic,         sponsor: heavy,   tier: 1, bar: high }
@@ -47,7 +47,8 @@ companies:
   - { name: Chime,             ats: greenhouse, token: chime,             sponsor: "yes",     tier: 2 }
   - { name: SoFi,              ats: greenhouse, token: sofi,              sponsor: "yes", aliases: ["Social Finance Inc"],     tier: 2 }
   - { name: Betterment,        ats: greenhouse, token: betterment,        sponsor: unknown, tier: 2 }
-  - { name: Marqeta,           ats: greenhouse, token: marqeta,           sponsor: unknown, tier: 3 }
+  # board gone (404 since 2026-09); not on any supported ATS
+  # - { name: Marqeta,           ats: greenhouse, token: marqeta,           sponsor: unknown, tier: 3 }
   - { name: Current,           ats: greenhouse, token: current,           sponsor: unknown, tier: 3 }
 
   # ── Quant / trading (NYC; strong H-1B records, high bar) ──
@@ -194,9 +195,10 @@ companies:
   - { name: Infisical, ats: ashby, token: infisical, sponsor: none, tier: 2 }
   - { name: Inngest, ats: ashby, token: inngest, sponsor: none, tier: 2 }
   - { name: Innovid, ats: greenhouse, token: innovid, sponsor: low, tier: 2 }
-  - { name: Instabase, ats: greenhouse, token: instabase, sponsor: "yes", tier: 2 }
+  # board gone (404 since 2026-09); not on any supported ATS
+  # - { name: Instabase, ats: greenhouse, token: instabase, sponsor: "yes", tier: 2 }
   - { name: Intercom, ats: greenhouse, token: intercom, sponsor: low, tier: 2 }
-  - { name: Iterable, ats: ashby, token: iterable, sponsor: low, tier: 2 }
+  - { name: Iterable, ats: greenhouse, token: iterable, sponsor: low, tier: 2 }
   - { name: Jobber, ats: ashby, token: jobber, sponsor: none, tier: 2 }
   - { name: Jump Trading, ats: greenhouse, token: jumptrading, sponsor: none, tier: 2, bar: high }
   - { name: Justworks, ats: greenhouse, token: justworks, sponsor: "yes", tier: 2 }
@@ -256,7 +258,8 @@ companies:
   - { name: Planet Labs, ats: greenhouse, token: planetlabs, sponsor: "yes", tier: 2 }
   - { name: PlanetScale, ats: greenhouse, token: planetscale, sponsor: none, tier: 2 }
   - { name: Poshmark, ats: ashby, token: poshmark, sponsor: low, tier: 2 }
-  - { name: Postman, ats: greenhouse, token: postman, sponsor: low, tier: 2 }
+  # board gone (404 since 2026-09); not on any supported ATS
+  # - { name: Postman, ats: greenhouse, token: postman, sponsor: low, tier: 2 }
   - { name: Postscript, ats: greenhouse, token: postscript, sponsor: none, tier: 2 }
   - { name: Prefect, ats: ashby, token: prefect, sponsor: none, tier: 2 }
   - { name: project44, ats: greenhouse, token: project44, sponsor: low, tier: 2 }
@@ -281,7 +284,7 @@ companies:
   - { name: Sierra, ats: ashby, token: sierra, sponsor: "yes", tier: 2, bar: high }
   - { name: Sift, ats: ashby, token: sift, sponsor: none, tier: 2 }
   - { name: SingleStore, ats: greenhouse, token: singlestore, sponsor: low, tier: 2 }
-  - { name: Sisense, ats: greenhouse, token: sisense, sponsor: low, tier: 2 }
+  - { name: Sisense, ats: ashby, token: sisense, sponsor: low, tier: 2 }
   - { name: Skydio, ats: ashby, token: skydio, sponsor: low, tier: 2 }
   - { name: Slice, ats: greenhouse, token: slice, sponsor: none, tier: 2 }
   - { name: SmartRent, ats: greenhouse, token: smartrent, sponsor: low, tier: 2 }
@@ -369,7 +372,7 @@ companies:
   - { name: CoreWeave,        ats: greenhouse,      token: coreweave,       sponsor: "yes",   tier: 1 }
   - { name: Glean,            ats: smartrecruiters, token: glean,           sponsor: unknown, tier: 2 }
   - { name: You.com,          ats: greenhouse,      token: youcom,          sponsor: unknown, tier: 2 }
-  - { name: World Labs,       ats: greenhouse,      token: worldlabs,       sponsor: unknown, tier: 2 }
+  - { name: World Labs,       ats: ashby,           token: worldlabs,       sponsor: unknown, tier: 2 }
   - { name: Imbue,            ats: greenhouse,      token: imbue,           sponsor: unknown, tier: 3 }
   - { name: Inflection AI,    ats: greenhouse,      token: inflectionai,    sponsor: "yes",   tier: 2 }
   - { name: Arize AI,         ats: greenhouse,      token: arizeai,         sponsor: unknown, tier: 2 }
@@ -400,7 +403,7 @@ companies:
   - { name: Grailed,          ats: greenhouse,      token: grailed,         sponsor: unknown, tier: 3 }
   - { name: SeatGeek,         ats: greenhouse,      token: seatgeek,        sponsor: "yes",   tier: 2 }
   - { name: FanDuel,          ats: greenhouse,      token: fanduel,         sponsor: "yes",   tier: 2 }
-  - { name: Underdog Fantasy, ats: greenhouse,      token: underdogfantasy, sponsor: unknown, tier: 3 }
+  - { name: Underdog Fantasy, ats: greenhouse,      token: underdog,        sponsor: unknown, tier: 3 }
   - { name: PrizePicks,       ats: greenhouse,      token: prizepicks,      sponsor: unknown, tier: 3 }
 
 

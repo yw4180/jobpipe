@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- `skip` command: drop a shortlist item, optionally hard-blocking its company
+  (`--block-company`) or a title term (`--block-title TERM`). Blocks live in
+  the gitignored `config/blocklist.yaml` and are applied as the first hard
+  reject in scoring.
+
+### Changed
+- Example `title_blockers` now cover internship / co-op / campus program titles.
+- `companies.yaml`: Temporal, Sisense and World Labs moved to Ashby; Iterable
+  moved to Greenhouse; Underdog Fantasy token is now `underdog`. Marqeta,
+  Instabase and Postman are commented out (boards gone, no supported ATS).
+
 ## v0.2.0 — 2026-08-18
 
 ### Added
