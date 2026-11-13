@@ -15,6 +15,7 @@ import sys
 
 from jpipe import config, dashboard, fetch, schedule, shortlist, sponsor, track
 from jpipe import db
+from jpipe import queue as queue_cmd
 from jpipe.db import ALL_STATUSES, CHANNELS
 
 ACTIVITY_KINDS = ["referral_ask", "networking", "followup", "recruiter_reply"]
@@ -280,6 +281,14 @@ def main():
     s = sub.add_parser("day", help="daily 10-minute entry point: sweep ghosts + shortlist + dashboard")
     s.add_argument("--no-open", action="store_true")
     s.set_defaults(func=cmd_day)
+
+    s = sub.add_parser("queue", help="process pending submission results, then build today's auto-apply queue")
+    s.add_argument("--n", type=int, help="max jobs in the queue (default: queue.max_per_day from profile)")
+    s.set_defaults(func=lambda a: queue_cmd.run(limit=a.n))
+
+    s = sub.add_parser("gmail-backfill", help="import Gmail application confirmations into the ledger")
+    s.add_argument("--input", default="data/gmail_backfill.json")
+    s.set_defaults(func=lambda a: __import__("jpipe.gmail_backfill", fromlist=["run"]).run(a.input))
 
     args = p.parse_args()
     args.func(args)

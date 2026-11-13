@@ -47,7 +47,7 @@ def _stories_for(hits: list[str]) -> list[dict]:
 _AVAILABLE = """
     FROM jobs
     WHERE active=1 AND verdict='keep'
-      AND status NOT IN ('applied','skipped')
+      AND status NOT IN ('applied','skipped','queued')  -- 'queued' = sitting in the auto-apply pipeline (jpipe/queue.py)
       AND id NOT IN (SELECT job_id FROM applications WHERE job_id IS NOT NULL)
       -- Cap in-flight processes per company at concurrent_per_company,
       -- to avoid looking like a mass-application spree

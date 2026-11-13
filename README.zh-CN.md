@@ -72,6 +72,9 @@ config/profile.yaml  ──┘                                 ^                
 | `export` | 把投递记录导出成 CSV 到 `records/` |
 | `schedule [--status]` | 生成 macOS launchd 定时任务，让 fetch 一天自动跑三轮 |
 | `day` | 每日入口：清扫 ghosted + 出清单 + 导出 + 看板 |
+| `skip <index> [--block-company] [--block-title TERM]` | 从清单里去掉一条；可顺手把该公司或某个标题词加入硬屏蔽（存在被 gitignore 的 `config/blocklist.yaml`） |
+| `queue [--n N]` | 先把待处理的投递结果写回台账，再生成当天的自动投递批次（`data/queue/queue_<日期>.json`），每个岗位配上关键词最匹配的简历版本和预填答案 |
+| `gmail-backfill [--input F]` | 一次性把投递确认邮件（JSON 列表）导入台账，能匹配到已抓取岗位的就挂上 |
 
 ## 配置
 

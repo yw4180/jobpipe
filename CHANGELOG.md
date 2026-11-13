@@ -3,12 +3,28 @@
 ## Unreleased
 
 ### Added
+- `simplify` source: the SimplifyJobs New-Grad-Positions README (public GitHub,
+  updated daily). The repo's own legend flags (no sponsorship / citizenship
+  required / closed) feed the existing hard rejects; takedown cleanup for
+  per-job-company aggregators is scoped by source instead of company.
+- `queue` command: daily auto-apply batch from the golden-rule filter, with
+  per-job resume-version matching (`queue.resume_versions` in profile.yaml)
+  and a prefill kit from answers.yaml; submission results are folded back
+  into the ledger on the next run. Jobs sit in a new `queued` status while
+  in flight and are released if never submitted.
+- `gmail-backfill` command: import past application confirmations from a
+  JSON list into the ledger.
+- New-grad class-year screening (`newgrad.excluded_years` in profile.yaml):
+  "New Grad 2027" titles are hard-rejected for a 2024 graduate.
+- ~30 AI startups (Ashby/Greenhouse boards) added to `companies.yaml`.
 - `skip` command: drop a shortlist item, optionally hard-blocking its company
   (`--block-company`) or a title term (`--block-title TERM`). Blocks live in
   the gitignored `config/blocklist.yaml` and are applied as the first hard
   reject in scoring.
 
 ### Changed
+- SQLite connections use a 120 s busy timeout so overlapping scheduled runs
+  wait instead of failing with "database is locked".
 - Example `title_blockers` now cover internship / co-op / campus program titles.
 - `companies.yaml`: Temporal, Sisense and World Labs moved to Ashby; Iterable
   moved to Greenhouse; Underdog Fantasy token is now `underdog`. Marqeta,

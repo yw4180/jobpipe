@@ -99,7 +99,7 @@ def run(only: str | None = None) -> None:
             # hundreds of newly added companies don't flood the fresh lane
             # all at once.
             seeding = conn.execute(
-                "SELECT 1 FROM jobs WHERE ats=? AND (company=? OR ats IN ('adzuna','hn')) LIMIT 1",
+                "SELECT 1 FROM jobs WHERE ats=? AND (company=? OR ats IN ('adzuna','hn','simplify')) LIMIT 1",
                 (entry["ats"], company),
             ).fetchone() is None
             seen_ids = []
@@ -149,11 +149,19 @@ def run(only: str | None = None) -> None:
                     ph = ",".join("?" * len(seen_ids))
                     # Scoped by ats: same-named company jobs found via
                     # aggregator sources (adzuna/hn) are not affected by the
-                    # company's own board takedown cleanup (and vice versa)
-                    conn.execute(
-                        f"UPDATE jobs SET active=0 WHERE company=? AND ats=? AND id NOT IN ({ph})",
-                        [company, entry["ats"], *seen_ids],
-                    )
+                    # company's own board takedown cleanup (and vice versa).
+                    # Per-job-company aggregators (simplify) scope by ats alone
+                    # — company=? would never match those rows.
+                    if getattr(sources.get(entry), "AGGREGATOR", False):
+                        conn.execute(
+                            f"UPDATE jobs SET active=0 WHERE ats=? AND id NOT IN ({ph})",
+                            [entry["ats"], *seen_ids],
+                        )
+                    else:
+                        conn.execute(
+                            f"UPDATE jobs SET active=0 WHERE company=? AND ats=? AND id NOT IN ({ph})",
+                            [company, entry["ats"], *seen_ids],
+                        )
             total_new += new_here
             total_seen += len(jobs)
             flag = f"  \033[36m+{new_here} new\033[0m" if new_here else ""

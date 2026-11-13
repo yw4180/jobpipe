@@ -98,6 +98,10 @@ _YOE_CTX = re.compile(r"experien|professional|industry|working|hands[- ]on|backg
 _YOE_AFTER = re.compile(r"^\s*['’]?s?\s*(?:of|in|across|with|[a-z]+ing\b)", re.I)
 _YOE_NOISE = re.compile(r"^\s*(?:['’]?s?\s*)?of\s+(?:runway|funding|operating)", re.I)
 
+# New-grad class-year screening (config-driven via profile.yaml: newgrad)
+_NEWGRAD_SYN = re.compile(r"new\s+grad|new\s+graduate|university\s+grad", re.I)
+_YEAR = re.compile(r"\b(20\d{2})\b")
+
 
 def required_yoe(desc: str) -> tuple[int | None, int | None]:
     """Extract required years of experience from the JD body, returning (min, max).
@@ -200,6 +204,18 @@ def score_job(job: dict, company_sponsor: str = "unknown",
     for bad in p.get("title_blockers") or []:
         if has(title_l, bad):
             return "reject", 0, {**detail, "reason": f"Title contains '{bad.strip()}'"}
+
+    # ── Hard reject 1b: new-grad class year excludes the candidate ──
+    # "Software Engineer New Grad - 2027" targets the class of 2027; someone
+    # who graduated in 2024 is screened out by newgrad.excluded_years.
+    # No year in the title = keep (scoring decides).
+    ng = p.get("newgrad") or {}
+    ng_years = {int(y) for y in (ng.get("excluded_years") or [])}
+    if ng_years and _NEWGRAD_SYN.search(title_l):
+        for m in _YEAR.finditer(title_l):
+            if int(m.group(1)) in ng_years:
+                return "reject", 0, {**detail, "reason":
+                    f"New-grad class of {m.group(1)} (graduated {ng.get('graduation', '?')})"}
 
     # ── Hard reject 2: purely overseas location ───────────────────
     # Any US location is kept — the goal is opportunity volume; only

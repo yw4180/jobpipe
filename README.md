@@ -72,6 +72,9 @@ config/profile.yaml  ──┘                                 ^                
 | `export` | Export application records as CSV into `records/` |
 | `schedule [--status]` | Generate a macOS launchd job so fetch runs three times a day |
 | `day` | The daily entry point: sweep ghosts + shortlist + export + dashboard |
+| `skip <index> [--block-company] [--block-title TERM]` | Drop a shortlist item; optionally hard-block its company or a title term (stored in gitignored `config/blocklist.yaml`) |
+| `queue [--n N]` | Fold pending submission results into the ledger, then build today's auto-apply batch (`data/queue/queue_<date>.json`) with the best-matching resume version and prefilled answers per job |
+| `gmail-backfill [--input F]` | One-time import of application confirmations (a JSON list) into the ledger, matched to tracked jobs where possible |
 
 ## Configuration
 

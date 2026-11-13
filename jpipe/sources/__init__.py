@@ -18,8 +18,8 @@ import re
 import requests
 
 from . import (adzuna, amazon, apple, ashby, eightfold, greenhouse, hn, lever,
-               meta, microsoft, oracle, recruitee, smartrecruiters, workable,
-               workday)
+               meta, microsoft, oracle, recruitee, simplify, smartrecruiters,
+               workable, workday)
 
 SOURCES = {
     "greenhouse": greenhouse,
@@ -37,6 +37,7 @@ SOURCES = {
     "recruitee": recruitee,
     "adzuna": adzuna,          # aggregator (free API key required); covers the long tail beyond the company list
     "hn": hn,                  # monthly HN "Who is hiring" thread
+    "simplify": simplify,      # SimplifyJobs New-Grad-Positions repo (public GitHub README)
 }
 
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " \

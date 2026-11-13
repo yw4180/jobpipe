@@ -470,6 +470,7 @@ companies:
   # no configuration needed.
   - { name: Adzuna,        ats: adzuna,    token: us,      sponsor: unknown, tier: 3 }
   - { name: HN Hiring,     ats: hn,        token: hn,      sponsor: unknown, tier: 3 }
+  - { name: SimplifyJobs New Grad, ats: simplify, token: new-grad, sponsor: unknown, tier: 3 }
 
 # ── Wanted but no token found (custom career sites or migrated boards) ────
 # These companies are worth applying to, but no public JSON job board was found.
@@ -481,3 +482,37 @@ companies:
 #   Two Sigma, dbt Labs, Etsy, HashiCorp, Retool, Hex, Snyk, Weights & Biases,
 #   Hugging Face, Airbyte, Attentive, Criteo, Integral Ad Science,
 #   Tempus, Spring Health, Datavant, Warby Parker, Millennium, Balyasny
+
+  # ── AI 创业公司批次(fastaijobs.com H-1B 页进货, 2026-09-22)──
+  # sponsor: "yes" 来自 fastaijobs 的 H-1B 标注,DataHub 尚无记录的按创业宽容策略保留——
+  # 无 LCA 记录 ≠ 不会 sponsor(公司太新);真实记录一旦入库自动覆盖此兜底。
+  - { name: Artie,             ats: ashby,      token: artie,             sponsor: "yes" }   # CDC/实时数据同步,和 warehouse 项目同领域
+  - { name: Bevel,             ats: ashby,      token: bevel,             sponsor: "yes" }
+  - { name: Cartesia,          ats: ashby,      token: cartesia,          sponsor: "yes" }
+  - { name: Cognition,         ats: ashby,      token: cognition,         sponsor: "yes", bar: high }
+  - { name: Comun,             ats: ashby,      token: comun,             sponsor: "yes" }
+  - { name: DualEntry,         ats: ashby,      token: dualentry,         sponsor: "yes" }
+  - { name: Exa,               ats: ashby,      token: exa,               sponsor: "yes" }
+  - { name: fal,               ats: ashby,      token: fal-ai,            sponsor: "yes" }
+  - { name: FluidStack,        ats: ashby,      token: fluidstack,        sponsor: "yes" }
+  - { name: Gensyn,            ats: greenhouse, token: gensyn,            sponsor: "yes" }
+  - { name: Krea,              ats: ashby,      token: krea,              sponsor: "yes" }
+  - { name: Lila Sciences,     ats: greenhouse, token: lilasciences,      sponsor: "yes" }
+  - { name: Metaview,          ats: ashby,      token: metaview,          sponsor: "yes" }
+  - { name: Niural,            ats: ashby,      token: niural,            sponsor: "yes" }
+  - { name: Omnea,             ats: ashby,      token: omnea,             sponsor: "yes" }
+  - { name: OpenArt,           ats: ashby,      token: openart,           sponsor: "yes" }
+  - { name: Periodic Labs,     ats: ashby,      token: periodic-labs,     sponsor: "yes", bar: high }
+  - { name: PhotoRoom,         ats: ashby,      token: photoroom,         sponsor: "yes" }
+  - { name: Plata Card,        ats: greenhouse, token: platacard,         sponsor: "yes" }
+  - { name: Prime Intellect,   ats: ashby,      token: primeintellect,    sponsor: "yes" }
+  - { name: Profound,          ats: greenhouse, token: profound,          sponsor: "yes" }
+  - { name: Recraft,           ats: ashby,      token: recraft,           sponsor: "yes" }
+  - { name: Reflection AI,     ats: ashby,      token: reflectionai,      sponsor: "yes", bar: high }
+  - { name: Retell AI,         ats: ashby,      token: retell-ai,         sponsor: "yes" }
+  - { name: Samaya AI,         ats: greenhouse, token: samayaai,          sponsor: "yes" }
+  - { name: Supabase,          ats: ashby,      token: supabase,          sponsor: "yes" }
+  - { name: Superpower,        ats: ashby,      token: superpower,        sponsor: "yes" }
+  - { name: Synthesia,         ats: ashby,      token: synthesia,         sponsor: "yes" }
+  - { name: Twelve Labs,       ats: ashby,      token: twelve-labs,       sponsor: "yes" }
+  - { name: Wispr Flow,        ats: ashby,      token: wispr-flow,        sponsor: "yes" }

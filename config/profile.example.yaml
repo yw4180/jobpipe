@@ -477,3 +477,29 @@ thresholds:
   stale_days: 45 # a posting untouched for this long is considered expired
   ghost_days: 21 # an application silent for this long counts as ghosted
   concurrent_per_company: 3 # max simultaneous processes per company; beyond this its postings stop surfacing
+
+# ── New-grad class year ──────────────────────────────────
+# Titles like "Software Engineer New Grad - 2027" target a specific graduating
+# class. List the class years that exclude you; titles without a year are kept.
+newgrad:
+  graduation: 2024-12          # your own graduation (shown in the reject reason only)
+  excluded_years: [2026, 2027] # "New Grad 2026/2027" postings are hard-rejected
+
+# ── Auto-apply queue (`python jobpipe.py queue`) ─────────
+# Builds a daily batch from the golden-rule filter above and matches each job
+# to the resume version whose keywords overlap the JD most. The queue JSON in
+# data/queue/ is the hand-off to whatever submits the forms (you, or a browser
+# agent); results files written back there are folded into the ledger.
+queue:
+  max_per_day: 10
+  default_version: de          # used when keyword overlap ties at zero
+  resume_versions:
+    de:
+      file: "/absolute/path/to/resume_data_engineer.pdf"
+      keywords: [data engineer, etl, airflow, dbt, spark, kafka, snowflake, pipeline, data warehouse]
+    mle:
+      file: "/absolute/path/to/resume_ml_engineer.pdf"
+      keywords: [machine learning engineer, mlops, feature store, model serving, pytorch, inference]
+    sde:
+      file: "/absolute/path/to/resume_software_engineer.pdf"
+      keywords: [software engineer, backend, rest api, microservice, distributed system, ci/cd]
